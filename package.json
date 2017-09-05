@@ -1,6 +1,6 @@
 {
   "name": "apify-fin",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A api solution for browser based Fetch api!",
   "main": "index.js",
   "scripts": {
