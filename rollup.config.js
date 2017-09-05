@@ -20,6 +20,6 @@ export default {
             dest: 'dist/index.min.js'
         }})
     ],
-    moduleName: 'aqua',
+    moduleName: 'apify-fin',
     dest: 'dist/index.js'
 };
