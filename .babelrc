@@ -1,0 +1,13 @@
+{
+    "presets": ["es2015-rollup"],
+    "plugins": [
+        "add-module-exports",
+        "transform-object-assign",
+        "async-to-promises",
+        "array-includes",
+        "external-helpers"
+    ],
+    "ignore": [
+        "dist/*.js"
+    ]
+}
