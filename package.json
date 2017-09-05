@@ -7,8 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "rollup -c"
   },
-  "author": "",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Neverland/apify.git"
+  },
+  "author": "enix@foxmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Neverland/apify/issues"
+  },
+  "homepage": "https://github.com/Neverland/apify#readme",
   "dependencies": {
     "es6-promise": "^4.1.1",
     "whatwg-fetch": "^2.0.3"

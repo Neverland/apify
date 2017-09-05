@@ -16,9 +16,9 @@ export default {
             include: 'src/**',
             runtimeHelpers: true
         }),
-        /*minify({umd: {
+        minify({umd: {
             dest: 'dist/index.min.js'
-        }})*/
+        }})
     ],
     moduleName: 'aqua',
     dest: 'dist/index.js'

@@ -190,7 +190,7 @@ babelHelpers;
 
 /**
  * @file constants
- * @author ienix(guoaimin01@baidu.com)
+ * @author ienix(enix@foxmail.com)
  *
  * @since 2017/9/5
  */
@@ -260,7 +260,7 @@ var defaultConfig = Object.freeze({
 
 /**
  * @file request
- * @author ienix(guoaimin01@baidu.com)
+ * @author ienix(enix@foxmail.com)
  *
  * @since 2017/9/5
  */
@@ -291,14 +291,6 @@ var sendRequest = function sendRequest() {
     if ('json' !== option.dataType.toLocaleLowerCase()) {
         return Promise.reject(option.errorHanlder({ success: false, message: 'Data type doesn\'t support!' }));
     }
-
-    data = JSON.stringify(data);
-
-    Promise.resolve().then(function () {
-        return setTimeout(function () {
-            console.log(1);
-        });
-    }).then(function () {});
 
     /**
      * 从枚举获取真实key
@@ -332,8 +324,6 @@ var sendRequest = function sendRequest() {
         });
     };
 
-    var xMessage = option[message];
-
     delete option[silent];
     delete option[timeout];
     delete option[message];
@@ -342,20 +332,7 @@ var sendRequest = function sendRequest() {
     var payload = assign({}, { method: method }, { headers: headers }, { body: data }, CREDENTIALS, option);
 
     return new Promise(function (resolve, reject) {
-        var networkTimeout = setTimeout(function () {
-            hideLoading();
-
-            if (xMessage === true) {
-                dialog({
-                    type: 'alert',
-                    head: false,
-                    content: '网络不畅，请稍后重试'
-                }).then(function (vm) {
-                    vm.hideUi();
-                });
-            }
-            return reject({ errno: -2, erromsg: 'network timeout!' });
-        }, xTimeout);
+        var networkTimeout = setTimeout(function () {}, xTimeout);
 
         return fetch(uri, payload).then(function (response) {
             /**
@@ -370,53 +347,12 @@ var sendRequest = function sendRequest() {
             }
 
             return response.json().then(function (json) {
-                var errorNumber = json.errno;
-                var errorMsg = json.errmsg;
-
-                /**
-                 * 根据前后端通信规范约定
-                 *
-                 * @link http://agroup.baidu.com/manhattanproject/md/article/124819
-                 *
-                 * 1. errno === 0 - 为正常返回，可以直接使用
-                 * 2. errno > 100 - 为不可处理错误， 需要直接弹出 errmsg
-                 * 3. 0 < errno <= 100 -  为前端需要关注的数据，具体由业务处理
-                 */
-                if (errorNumber > 100) {
-                    xMessage && dialog({
-                        type: 'alert',
-                        head: false,
-                        content: json.errmsg
-                    }).then(function (vm) {
-                        vm.hideUi();
-                    });
-                    log.sendExc('错误码: ' + errorNumber + ' 错误信息: ' + errorMsg);
-                    return reject(json);
-                } else if (errorNumber > 0 && errorNumber <= 100) {
-                    log.sendExc('错误码: ' + errorNumber + ' 错误信息: ' + errorMsg);
-                    return reject(json);
-                }
-
                 return resolve(json);
             });
         }).catch(function (error) {
-            hideLoading();
-
-            /**
-             * 1. 如果有正确的数据结构体, 说明是从正确请求成功返回的error 大于100的数据
-             * 2. 如果没有正确的结构体 说明是服务器错误
-             */
+            // hook error
 
             // 404, 500 ...
-            if (error.status && error.status !== 200) {
-                log.sendDp('z_REQUEST_SERVER_ERROR');
-
-                if (xMessage === true) {
-                    alert('网络不给力，请求失败了! \n 请刷新重试！');
-                    return reject({ errno: -1, errmsg: error.status });
-                }
-            }
-
             return reject(error);
         });
     });
