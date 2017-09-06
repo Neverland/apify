@@ -5,6 +5,11 @@
  * @since 2017/9/5
  */
 
-export errorHandler = () => {
-
+export default {
+    success(data, promise) {
+        return data;
+    },
+    error(data, promise) {
+        return data;
+    }
 };

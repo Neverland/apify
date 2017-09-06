@@ -5,7 +5,16 @@
  * @since 2017/9/5
  */
 
-import * as defaultConfig from './constants';
+import u from 'underscore';
+import queryString from 'query-string';
+import deepAssign from 'deep-assign';
+
+import util from './util';
+
+import defaultConfig from './constants';
+import handlers from './config/handler';
+import hooks from './config/hook';
+import fetchOptionList from './config/fetchOptionList';
 
 let {X_OPTION_ENUM, METHOD} = defaultConfig;
 
@@ -22,12 +31,18 @@ let {X_OPTION_ENUM, METHOD} = defaultConfig;
  * @return {Promise}
  */
 
-let sendRequest = (method = 'POST', uri, data = {}, option = {}) => {
-    option = Object.assign({}, defaultConfig, option);
+function sendRequest(method = 'POST', uri, data = {}, option = {}) {
+    let {hook = {}, handler = {}} = option;
+
+    hook = Object.assign({}, hooks, hook);
+    handler = Object.assign({}, handlers, handler);
+    option = deepAssign({}, defaultConfig, {handler}, {hook}, option);
 
     if ('json' !== option.dataType.toLocaleLowerCase()) {
-        return Promise.reject(option.errorHanlder({success: false, message: 'Data type doesn\'t support!'}));
+        return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}));
     }
+
+    let globalHook = option.hook;
 
     /**
      * 从枚举获取真实key
@@ -38,77 +53,99 @@ let sendRequest = (method = 'POST', uri, data = {}, option = {}) => {
      *
      */
     let {silent, message, timeout} = X_OPTION_ENUM;
+    let xTimeout = option[timeout];
 
     /**
-     * 合并默认配置和自定义配置
+     * hook: beforeRequest
      */
-    option = assign({}, X_OPTION, option);
+    globalHook.beforeRequest(option);
 
-    let uiLoading;
-    // 启用loading
-    if (option[silent] === false) {
-        uiLoading = loading();
-    }
+    let payload = sendRequest.getPayload(method, data, option);
 
-    let xTimeout = option[timeout];
-    let hideLoading = () => {
-        uiLoading && uiLoading.then(vm => {
-            vm.hideUi();
-            vm.$destroy(true);
-        });
-    };
 
-    let xMessage = option[message];
-
-    delete option[silent];
-    delete option[timeout];
-    delete option[message];
-
-    // 合并payload
-    let payload = assign(
-        {},
-        {method},
-        {headers},
-        {body: data},
-        CREDENTIALS,
-        option
-    );
-
-    return new Promise((resolve, reject) => {
+    let promise = new Promise((resolve, reject) => {
         let networkTimeout = setTimeout(() => {
+            /**
+             * hook: beforeRequest
+             */
+            globalHook.timeout();
 
+            return reject(handler.error({type: false, message: 'network timeout!', data: {}}, promise));
         }, xTimeout);
 
         return fetch(uri, payload)
             .then(response => {
-                /**
-                 * 1.这里有数据返回，先关闭掉loading。
-                 * 2.在根据情况出来response
-                 */
-                hideLoading();
-                clearTimeout(networkTimeout);
-
                 if (response.status !== 200) {
+                    clearTimeout(networkTimeout);
                     return reject(response);
                 }
 
+                /**
+                 * hook: afterSuccessRequest()
+                 */
+                globalHook.requestSuccess();
+
                 return response.json()
                     .then(json => {
-                        return resolve(json);
+                        let data = {success: false, message: 'success', data: json};
+                        let result = handler.success(data, promise);
+
+                        if (util.isPromise(result)) {
+                            return result;
+                        }
+
+                        return resolve(result || data);
                     });
             })
             .catch(error => {
-                // hook error
+                let result = {};
+                let {status = {}, statusText = 'Error'} = error;
+
+                /**
+                 * hook: requestFail()
+                 */
+                globalHook.requestFail();
 
                 // 404, 500 ...
-                if (error.status && error.status !== 200) {
+                if (status && status !== 200) {
+                    let data = {success: false, message: statusText, data: error};
 
-                    // handler
+                    result = handler.error(data, promise);
+
+                    if (util.isPromise(result)) {
+                        return result;
+                    }
                 }
 
-                return reject(error);
+                return reject(result);
             });
     });
+
+    return promise;
+}
+
+sendRequest.getPayload = (method, data, option) => {
+    let {credentials, headers, hook} = option;
+
+    if ('string' !== typeof data) {
+        data = JSON.stringify(data);
+    }
+
+    let fetchOption = u.pick(option, fetchOptionList);
+
+    data = Object.assign(
+        {},
+        {method},
+        {headers},
+        {body: data},
+        credentials,
+        fetchOption
+    );
+
+    /**
+     * hook: beforeRequest
+     */
+    return hook.payload(data);
 };
 
 let request = {};
@@ -123,7 +160,7 @@ let request = {};
  */
 
 request.post = (uri, data, option) => {
-    return sendRequest(POST, uri, data, option);
+    return sendRequest(METHOD.POST, uri, data, option);
 };
 
 /**
@@ -151,7 +188,7 @@ request.get = (uri, data = '', option) => {
 
     uri += data;
 
-    let param = assign({}, {method: GET}, option);
+    let param = Object.assign({}, {method: METHOD.GET}, option);
 
     return fetch(uri, {param});
 };

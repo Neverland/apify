@@ -54,12 +54,11 @@ const DATA_TYPE = 'json';
 export default Object.assign({},
     {
         timeout: FETCH_TIMEOUT,
-        xOptionEnum: X_OPTION_ENUM,
         headers: HEADERS,
-        METHOD,
-        X_OPTION_ENUM,
         credentials: CREDENTIALS,
-        dataType: DATA_TYPE
+        dataType: DATA_TYPE,
+        X_OPTION_ENUM,
+        METHOD
     },
     X_OPTION
 );
