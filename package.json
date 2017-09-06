@@ -1,6 +1,6 @@
 {
-  "name": "i-api",
-  "version": "0.0.3",
+  "name": "i-apify",
+  "version": "0.0.4",
   "description": "A api solution for browser based Fetch api!",
   "main": "index.js",
   "scripts": {

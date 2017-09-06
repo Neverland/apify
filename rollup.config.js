@@ -20,6 +20,6 @@ export default {
             dest: 'dist/index.min.js'
         }})
     ],
-    moduleName: 'i-api',
+    moduleName: 'i-apify',
     dest: 'dist/index.js'
 };
