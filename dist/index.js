@@ -1,10 +1,20 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-	typeof define === 'function' && define.amd ? define(factory) :
-	(global['apify-fin'] = factory());
-}(this, (function () { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('query-string'), require('deep-assign')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'query-string', 'deep-assign'], factory) :
+	(global['i-apify'] = factory(global.u,global.queryString,global.deepAssign));
+}(this, (function (u,queryString,deepAssign) { 'use strict';
+
+u = u && u.hasOwnProperty('default') ? u['default'] : u;
+queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
+deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
 
 var babelHelpers = {};
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+  return typeof obj;
+} : function (obj) {
+  return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+};
+
 
 
 
@@ -189,20 +199,34 @@ var _extends = Object.assign || function (target) {
 babelHelpers;
 
 /**
+ * @file util
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/6
+ */
+
+var util = {
+    isPromise: function isPromise(obj) {
+        return Object.prototype.toString.call(obj) === '[object Promise]' || !!obj && ((typeof obj === 'undefined' ? 'undefined' : typeof obj === 'undefined' ? 'undefined' : _typeof(obj)) === 'object' || typeof obj === 'function') && typeof obj.constructor === 'function' && !Object.hasOwnProperty.call(obj, 'constructor') && obj.constructor.name === 'Promise';
+    }
+};
+module.exports = exports['default'];
+
+/**
  * @file constants
  * @author ienix(enix@foxmail.com)
  *
  * @since 2017/9/5
  */
 
-var GET$1 = 'GET';
-var POST$1 = 'POST';
+var GET = 'GET';
+var POST = 'POST';
 var DELETE = 'DELETE';
 var PUT = 'PUT';
 
 var METHOD$1 = {
-    GET: GET$1,
-    POST: POST$1,
+    GET: GET,
+    POST: POST,
     DELETE: DELETE,
     PUT: PUT
 };
@@ -221,11 +245,11 @@ var X_OPTION_ENUM$1 = {
 /**
  * @const same-origin 只有同源有这个配置才能传递cookie
  */
-var CREDENTIALS$1 = {
+var CREDENTIALS = {
     credentials: 'same-origin'
 };
 
-var X_OPTION$1 = {
+var X_OPTION = {
     // 用于控制 ui loading
     'x-silent': false,
     // 用于控制 ui dialog 抛出的全局信息
@@ -241,22 +265,70 @@ var HEADERS = {
 
 var DATA_TYPE = 'json';
 
-var constants = _extends({}, {
+var defaultConfig = _extends({}, {
     timeout: FETCH_TIMEOUT,
-    xOptionEnum: X_OPTION_ENUM$1,
     headers: HEADERS,
-    METHOD: METHOD$1,
+    credentials: CREDENTIALS,
+    dataType: DATA_TYPE,
     X_OPTION_ENUM: X_OPTION_ENUM$1,
-    credentials: CREDENTIALS$1,
-    dataType: DATA_TYPE
-}, X_OPTION$1);
+    METHOD: METHOD$1
+}, X_OPTION);
 module.exports = exports['default'];
 
+/**
+ * @file handler
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/5
+ */
 
+var handlers = {
+    success: function success(data, promise) {
+        return data;
+    },
+    error: function error(data, promise) {
+        return data;
+    }
+};
+module.exports = exports["default"];
 
-var defaultConfig = Object.freeze({
-	default: constants
-});
+/**
+ * @file hook
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/6
+ */
+
+var hooks = {
+    beforeRequest: function beforeRequest() {},
+    payload: function payload(data) {
+        return data;
+    },
+    timeout: function timeout() {},
+    requestSuccess: function requestSuccess() {},
+    requestFail: function requestFail() {}
+};
+module.exports = exports["default"];
+
+/**
+ * @file fetchOption
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/6
+ */
+
+var fetchOptionList = ['method', // GET/POST等
+'headers', // 一个普通对象，或者一个 Headers 对象
+'body', // 传递给服务器的数据，可以是字符串/Buffer/Blob/FormData，如果方法是 GET/HEAD，则不能有此参数
+'mode', // cors / no-cors / same-origin， 是否跨域，默认是 no-cors
+'credentials', // omit / same-origin / include
+'cache', // default / no-store / reload / no-cache / force-cache / only-if-cached
+'redirect', // follow / error / manual
+'referrer', // no-referrer / client / 或者一个url
+'referrerPolicy', // no-referrer / no-referrer-when-downgrade / origin /  origin-when-cross-origin / unsafe-url
+'integrity' // 资源完整性验证
+];
+module.exports = exports['default'];
 
 /**
  * @file request
@@ -265,7 +337,8 @@ var defaultConfig = Object.freeze({
  * @since 2017/9/5
  */
 
-var X_OPTION_ENUM = undefined;
+var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
+var METHOD = defaultConfig.METHOD;
 
 /**
  * sendRequest
@@ -280,17 +353,27 @@ var X_OPTION_ENUM = undefined;
  * @return {Promise}
  */
 
-var sendRequest = function sendRequest() {
+function sendRequest() {
     var method = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 'POST';
     var uri = arguments[1];
     var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
     var option = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
+    var _option = option,
+        _option$hook = _option.hook,
+        hook = _option$hook === undefined ? {} : _option$hook,
+        _option$handler = _option.handler,
+        handler = _option$handler === undefined ? {} : _option$handler;
 
-    option = _extends({}, defaultConfig, option);
+
+    hook = _extends({}, hooks, hook);
+    handler = _extends({}, handlers, handler);
+    option = deepAssign({}, defaultConfig, { handler: handler }, { hook: hook }, option);
 
     if ('json' !== option.dataType.toLocaleLowerCase()) {
-        return Promise.reject(option.errorHanlder({ success: false, message: 'Data type doesn\'t support!' }));
+        return Promise.reject(handler.error({ success: false, message: 'Data type doesn\'t support!' }));
     }
+
+    var globalHook = option.hook;
 
     /**
      * 从枚举获取真实key
@@ -304,58 +387,95 @@ var sendRequest = function sendRequest() {
         message = X_OPTION_ENUM.message,
         timeout = X_OPTION_ENUM.timeout;
 
-    /**
-     * 合并默认配置和自定义配置
-     */
-
-    option = assign({}, X_OPTION, option);
-
-    var uiLoading = void 0;
-    // 启用loading
-    if (option[silent] === false) {
-        uiLoading = loading();
-    }
-
     var xTimeout = option[timeout];
-    var hideLoading = function hideLoading() {
-        uiLoading && uiLoading.then(function (vm) {
-            vm.hideUi();
-            vm.$destroy(true);
-        });
-    };
 
-    delete option[silent];
-    delete option[timeout];
-    delete option[message];
+    /**
+     * hook: beforeRequest
+     */
+    globalHook.beforeRequest(option);
 
-    // 合并payload
-    var payload = assign({}, { method: method }, { headers: headers }, { body: data }, CREDENTIALS, option);
+    var payload = sendRequest.getPayload(method, data, option);
 
-    return new Promise(function (resolve, reject) {
-        var networkTimeout = setTimeout(function () {}, xTimeout);
+    var promise = new Promise(function (resolve, reject) {
+        var networkTimeout = setTimeout(function () {
+            /**
+             * hook: beforeRequest
+             */
+            globalHook.timeout();
+
+            return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, promise));
+        }, xTimeout);
 
         return fetch(uri, payload).then(function (response) {
-            /**
-             * 1.这里有数据返回，先关闭掉loading。
-             * 2.在根据情况出来response
-             */
-            hideLoading();
-            clearTimeout(networkTimeout);
-
             if (response.status !== 200) {
+                clearTimeout(networkTimeout);
                 return reject(response);
             }
 
+            /**
+             * hook: afterSuccessRequest()
+             */
+            globalHook.requestSuccess();
+
             return response.json().then(function (json) {
-                return resolve(json);
+                var data = { success: false, message: 'success', data: json };
+                var result = handler.success(data, promise);
+
+                if (util.isPromise(result)) {
+                    return result;
+                }
+
+                return resolve(result || data);
             });
         }).catch(function (error) {
-            // hook error
+            var result = {};
+            var _error$status = error.status,
+                status = _error$status === undefined ? {} : _error$status,
+                _error$statusText = error.statusText,
+                statusText = _error$statusText === undefined ? 'Error' : _error$statusText;
+
+            /**
+             * hook: requestFail()
+             */
+
+            globalHook.requestFail();
 
             // 404, 500 ...
-            return reject(error);
+            if (status && status !== 200) {
+                var _data = { success: false, message: statusText, data: error };
+
+                result = handler.error(_data, promise);
+
+                if (util.isPromise(result)) {
+                    return result;
+                }
+            }
+
+            return reject(result);
         });
     });
+
+    return promise;
+}
+
+sendRequest.getPayload = function (method, data, option) {
+    var credentials = option.credentials,
+        headers = option.headers,
+        hook = option.hook;
+
+
+    if ('string' !== typeof data) {
+        data = JSON.stringify(data);
+    }
+
+    var fetchOption = u.pick(option, fetchOptionList);
+
+    data = _extends({}, { method: method }, { headers: headers }, { body: data }, credentials, fetchOption);
+
+    /**
+     * hook: beforeRequest
+     */
+    return hook.payload(data);
 };
 
 var request = {};
@@ -370,7 +490,7 @@ var request = {};
  */
 
 request.post = function (uri, data, option) {
-    return sendRequest(POST, uri, data, option);
+    return sendRequest(METHOD.POST, uri, data, option);
 };
 
 /**
@@ -399,13 +519,86 @@ request.get = function (uri) {
 
     uri += data;
 
-    var param = assign({}, { method: GET }, option);
+    var param = _extends({}, { method: METHOD.GET }, option);
 
     return fetch(uri, { param: param });
 };
 
 module.exports = exports['default'];
 
-return request;
+/**
+ * @file apify
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/6
+ */
+
+/**
+ * 使api url function 化
+ *
+ * e.g
+ *
+ *  const API_CONFIG = {
+ *      postCode: '/api/post/code',
+ *      postAuth: '/api/post/auth'
+ *  }
+ *
+ *  api = apify(API_CONFIG);
+ *
+ *  api.postCode({})
+ *      .then()
+ *      .fail();
+ */
+
+/**
+ * apify
+ *
+ * @param {Function} sendRequest 发送请求的函数
+ * @param {Object} apis - 静态uri映射map
+ * @param {Object} configure - 可以覆盖 fetch api的配置
+ * @return {Object}
+ */
+var apify = function (sendRequest) {
+  var apis = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var configure = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+  apis = _extends({}, apis);
+
+  var all = Object.keys(apis || {});
+
+  all.forEach(function (key) {
+    var origin = _extends(apis[key]);
+
+    apis[key] = function (options, config) {
+      var param = _extends({}, options);
+
+      return sendRequest(origin, param, _extends({}, configure, config));
+    };
+
+    apis[key].origin || (apis[key].origin = origin);
+
+    apis[key].getUrl = function () {
+      return origin.toString();
+    };
+  });
+
+  return apis || {};
+};
+module.exports = exports["default"];
+
+/**
+ * @file index
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/6
+ */
+
+var index = {
+  request: request,
+  apify: apify
+};
+module.exports = exports['default'];
+
+return index;
 
 })));
