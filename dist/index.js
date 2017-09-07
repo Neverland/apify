@@ -337,6 +337,11 @@ module.exports = exports['default'];
  * @since 2017/9/5
  */
 
+/* global deepAssign */
+/* global Promise */
+/* global queryString */
+/* global deepAssign */
+
 var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
 var METHOD = defaultConfig.METHOD;
 

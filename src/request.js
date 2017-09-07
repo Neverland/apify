@@ -5,6 +5,11 @@
  * @since 2017/9/5
  */
 
+/* global deepAssign */
+/* global Promise */
+/* global queryString */
+/* global deepAssign */
+
 import u from 'underscore';
 import queryString from 'query-string';
 import deepAssign from 'deep-assign';
