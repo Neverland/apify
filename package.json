@@ -1,10 +1,10 @@
 {
   "name": "i-apify",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A api solution for browser based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "build": "rollup -c"
   },
   "repository": {
@@ -44,10 +44,12 @@
     "babel-preset-es2015-rollup": "^3.0.0",
     "babel-runtime": "^6.25.0",
     "babelify": "^7.3.0",
+    "mocha": "^3.5.0",
     "rollup": "^0.49.2",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",
     "rollup-plugin-minify": "^1.0.3",
-    "rollup-plugin-node-resolve": "^3.0.0"
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "should": "^13.0.1"
   }
 }

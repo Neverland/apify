@@ -1,8 +1,13 @@
 # apify
 A api solution for browser based Fetch api!
 
-api.method(payload, option);
+[![Build Status](https://www.travis-ci.org/Neverland/apify.svg)](https://www.travis-ci.org/Neverland/apify)
+[![npm](https://img.shields.io/npm/v/i-apify.svg)](https://www.npmjs.com/package/i-apify)
+[![Github All Releases](https://img.shields.io/npm/dm/i-apify.svg)](https://www.npmjs.com/package/i-apify)
 
+```javascript
+api.method(payload, option);
+```
 ## description
 >  基于fetch api的前端数据链路层封装，可以达到一次配置随意轻松使用！
 

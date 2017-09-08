@@ -5,6 +5,7 @@
  * @since 2017/9/5
  */
 
+/* global fetch */
 /* global deepAssign */
 /* global Promise */
 /* global queryString */
@@ -77,6 +78,13 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
             return reject(handler.error({type: false, message: 'network timeout!', data: {}}, promise));
         }, xTimeout);
+
+        if (!fetch) {
+            let data = {type: false, message: 'The fetch is not defined!', data: {}};
+            let result = handler.error(data, promise);
+
+            return reject(result);
+        }
 
         return fetch(uri, payload)
             .then(response => {

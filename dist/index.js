@@ -337,6 +337,7 @@ module.exports = exports['default'];
  * @since 2017/9/5
  */
 
+/* global fetch */
 /* global deepAssign */
 /* global Promise */
 /* global queryString */
@@ -411,6 +412,13 @@ function sendRequest() {
             return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, promise));
         }, xTimeout);
 
+        if (!fetch) {
+            var _data = { type: false, message: 'fetch is not defined!', data: {} };
+            var result = handler.error(_data, promise);
+
+            return reject(result);
+        }
+
         return fetch(uri, payload).then(function (response) {
             if (response.status !== 200) {
                 clearTimeout(networkTimeout);
@@ -447,9 +455,9 @@ function sendRequest() {
 
             // 404, 500 ...
             if (status && status !== 200) {
-                var _data = { success: false, message: statusText, data: error };
+                var _data2 = { success: false, message: statusText, data: error };
 
-                result = handler.error(_data, promise);
+                result = handler.error(_data2, promise);
 
                 if (util.isPromise(result)) {
                     return result;
