@@ -122,9 +122,9 @@ api.a(url, payload, [option]);
 ```ecmascript 6
     let option = {
         'x-silent': false,
-        // 用于控制 ui dialog 抛出的全局信息
+        // 用于控制 ui dialog 抛出的信息
         'x-message': true,
-        // 用于控制 ui dialog 抛出的全局信息
+        // 用于控制 ui dialog 抛出的信息
         'x-timeout': 5000,
         headers: {
             'Accept': 'application/json',
@@ -201,6 +201,17 @@ api.a(url, payload, [option]);
     
     // error data
     {success: false, data: 接口返回的原始数据, message: 自定义message}
+```
+#### global config
+
+```ecmascript 6
+    apify(request.post, apiList, option)
+```
+
+#### local config
+
+```ecmascript 6
+    api.method(payload, option)
 ```
 
 ## payload
