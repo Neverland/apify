@@ -149,7 +149,7 @@ sendRequest.getPayload = (method, data, option) => {
     data = Object.assign(
         {},
         {method},
-        {headers},
+        {headers: new Headers(headers)},
         {body: data},
         credentials,
         fetchOption
