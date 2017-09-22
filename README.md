@@ -1,6 +1,8 @@
 # apify
 A api solution for browser based Fetch api!
 
+> Auto-polyfill Promise, Fetch api! Support IE6+
+
 [![Build Status](https://www.travis-ci.org/Neverland/apify.svg)](https://www.travis-ci.org/Neverland/apify)
 [![npm](https://img.shields.io/npm/v/i-apify.svg)](https://www.npmjs.com/package/i-apify)
 [![Github All Releases](https://img.shields.io/npm/dm/i-apify.svg)](https://www.npmjs.com/package/i-apify)
@@ -8,7 +10,7 @@ A api solution for browser based Fetch api!
 ```javascript
 api.method(payload, option);
 ```
-## description
+## Description
 >  基于fetch api的前端数据链路层封装，可以达到一次配置随意轻松使用！
 
 apify 有两个方法
@@ -16,7 +18,7 @@ apify 有两个方法
    - apify 用于把配置处理为可以发送请求的函数化列表
    - 可以使用apify处理过的简单发送请求方式，也可以直接用requset发送请求
 
-## 定义
+## Define
 
 ```ecmascript 6
 
@@ -46,7 +48,7 @@ let api = apify(request.post, apiList, option);
 
 ```
 
-### 使用
+## Usage
 
 /**
  * @param {JSON|string} payload
@@ -99,7 +101,7 @@ api.a({x:1, y:1}, option)
     .then();
 ```
 
-## option
+## Option
 
 api.a(url, payload, [option]);
 
@@ -214,7 +216,18 @@ api.a(url, payload, [option]);
     api.method(payload, option)
 ```
 
-## payload
+## Payload
 ```
 {JSON|string}
+```
+
+## Building & Testing
+
+### Building
+```
+    npm run build
+```
+### testing
+```
+    npm run test
 ```
