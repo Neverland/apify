@@ -6,11 +6,7 @@
  */
 
 /* global fetch */
-/* global deepAssign */
 /* global Promise */
-/* global queryString */
-/* global deepAssign */
-/* global u */
 
 import u from 'underscore';
 import deepAssign from 'deep-assign';

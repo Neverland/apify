@@ -338,11 +338,7 @@ module.exports = exports['default'];
  */
 
 /* global fetch */
-/* global deepAssign */
 /* global Promise */
-/* global queryString */
-/* global deepAssign */
-/* global u */
 
 var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
 
@@ -529,7 +525,7 @@ module.exports = exports['default'];
 
 /**
  * @file get
- * @author ienix(guoaimin01@baidu.com)
+ * @author ienix(enix@foxmail.com)
  *
  * @since 2017/9/25
  */
