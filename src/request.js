@@ -93,7 +93,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
         return fetch(uri, payload)
             .then(response => {
                 if (response.status !== 200) {
-                    clearTimeout(networkTimeout);
+                    sendRequest.clearTimeout(networkTimeout);
                     return reject(response);
                 }
 
@@ -117,6 +117,8 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             .catch(error => {
                 let result = {};
                 let {status = {}, statusText = 'Error'} = error;
+
+                sendRequest.clearTimeout(networkTimeout);
 
                 /**
                  * hook: requestFail()
@@ -167,6 +169,10 @@ sendRequest.getPayload = (method, data, option) => {
      * hook: beforeRequest
      */
     return hook.payload(data, option);
+};
+
+sendRequest.clearTimeout = timeout => {
+    clearTimeout(timeout);
 };
 
 export default sendRequest;

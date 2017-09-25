@@ -426,7 +426,7 @@ function sendRequest() {
 
         return fetch(uri, payload).then(function (response) {
             if (response.status !== 200) {
-                clearTimeout(networkTimeout);
+                sendRequest.clearTimeout(networkTimeout);
                 return reject(response);
             }
 
@@ -452,10 +452,12 @@ function sendRequest() {
                 _error$statusText = error.statusText,
                 statusText = _error$statusText === undefined ? 'Error' : _error$statusText;
 
+
+            sendRequest.clearTimeout(networkTimeout);
+
             /**
              * hook: requestFail()
              */
-
             globalHook.requestFail(promise);
 
             // 404, 500 ...
@@ -498,6 +500,10 @@ sendRequest.getPayload = function (method, data, option) {
      * hook: beforeRequest
      */
     return hook.payload(data, option);
+};
+
+sendRequest.clearTimeout = function (timeout) {
+    clearTimeout(timeout);
 };
 
 module.exports = exports['default'];
