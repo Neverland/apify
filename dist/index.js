@@ -1,12 +1,12 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('query-string'), require('deep-assign')) :
-	typeof define === 'function' && define.amd ? define(['underscore', 'query-string', 'deep-assign'], factory) :
-	(global['i-apify'] = factory(global.u,global.queryString,global.deepAssign));
-}(this, (function (u,queryString,deepAssign) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.queryString));
+}(this, (function (u,deepAssign,queryString) { 'use strict';
 
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
-queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
+queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
 
 var babelHelpers = {};
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -342,9 +342,9 @@ module.exports = exports['default'];
 /* global Promise */
 /* global queryString */
 /* global deepAssign */
+/* global u */
 
 var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
-var METHOD = defaultConfig.METHOD;
 
 /**
  * sendRequest
@@ -375,6 +375,16 @@ function sendRequest() {
     handler = _extends({}, handlers, handler);
     option = deepAssign({}, defaultConfig, { handler: handler }, { hook: hook }, option);
 
+    if (!option.METHOD[method]) {
+        return Promise.reject(handler.error({ success: false, message: 'The ' + method + ' type doesn\'t support!' }));
+    }
+
+    method = option.METHOD[method];
+    option = _extends({}, option, {
+        'x-uri': uri,
+        'x-method': method
+    });
+
     if ('json' !== option.dataType.toLocaleLowerCase()) {
         return Promise.reject(handler.error({ success: false, message: 'Data type doesn\'t support!' }));
     }
@@ -401,7 +411,6 @@ function sendRequest() {
     globalHook.beforeRequest(option);
 
     var payload = sendRequest.getPayload(method, data, option);
-
     var promise = new Promise(function (resolve, reject) {
         var networkTimeout = setTimeout(function () {
             /**
@@ -413,7 +422,7 @@ function sendRequest() {
         }, xTimeout);
 
         if (!fetch) {
-            var _data = { type: false, message: 'fetch is not defined!', data: {} };
+            var _data = { type: false, message: 'The fetch is not defined!', data: {} };
             var result = handler.error(_data, promise);
 
             return reject(result);
@@ -428,7 +437,7 @@ function sendRequest() {
             /**
              * hook: afterSuccessRequest()
              */
-            globalHook.requestSuccess();
+            globalHook.requestSuccess(promise);
 
             return response.json().then(function (json) {
                 var data = { success: false, message: 'success', data: json };
@@ -451,7 +460,7 @@ function sendRequest() {
              * hook: requestFail()
              */
 
-            globalHook.requestFail();
+            globalHook.requestFail(promise);
 
             // 404, 500 ...
             if (status && status !== 200) {
@@ -485,13 +494,24 @@ sendRequest.getPayload = function (method, data, option) {
 
     data = _extends({}, { method: method }, { headers: headers }, { body: data }, credentials, fetchOption);
 
+    if ('GET' === method) {
+        delete data.body;
+    }
+
     /**
      * hook: beforeRequest
      */
-    return hook.payload(data);
+    return hook.payload(data, option);
 };
 
-var request = {};
+module.exports = exports['default'];
+
+/**
+ * @file post
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/25
+ */
 
 /**
  * post
@@ -502,14 +522,22 @@ var request = {};
  * @return {Promise}
  */
 
-request.post = function (uri, data, option) {
-    return sendRequest(METHOD.POST, uri, data, option);
-};
+var post = (function (uri, data, option) {
+  return sendRequest('POST', uri, data, option);
+});
+module.exports = exports['default'];
+
+/**
+ * @file get
+ * @author ienix(guoaimin01@baidu.com)
+ *
+ * @since 2017/9/25
+ */
+
+/* global queryString */
 
 /**
  * get
- *
- * 提供一个简单的get,规范中的请求都应该由post方式发送
  *
  * @param {string} uri
  * @param {string} data -  fromData
@@ -517,26 +545,52 @@ request.post = function (uri, data, option) {
  * @return {Promise}
  */
 
-request.get = function (uri) {
-    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
-    var option = arguments[2];
+var get$1 = (function (uri) {
+  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+  var option = arguments[2];
 
-    if (u.isObject(data) && !u.isEmpty(data)) {
+  /**
+   * @property {Object} search - 用于收集uri上的search
+   */
+  var search = {};
+  /**
+   * @property {string} pureUri - 用于存储除search外的根链接
+   */
+  var pureUri = uri;
+  /**
+   * @property {string} hasSearch - 用于标示uri中是否有`search`
+   */
+  var hasSearch = uri.indexOf('?') > -1;
 
-        data = queryString.stringify(data);
-    }
+  if (hasSearch) {
+    var temp = uri.split('?');
 
-    if (data.length !== 0 && uri.indexOf('?') === -1) {
-        uri += '?';
-    }
+    pureUri = temp[0];
+    search = queryString.parse(temp[1]);
+  }
 
-    uri += data;
+  var payload = _extends({}, search, data);
+  var query = queryString.stringify(payload);
 
-    var param = _extends({}, { method: METHOD.GET }, option);
+  if (query) {
+    uri = pureUri + '?' + query;
+  }
 
-    return fetch(uri, { param: param });
+  return sendRequest('GET', uri, '', option);
+});
+module.exports = exports['default'];
+
+/**
+ * @file index
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/9/25
+ */
+
+var request = {
+  get: get$1,
+  post: post
 };
-
 module.exports = exports['default'];
 
 /**

@@ -9,8 +9,7 @@ import babel from 'rollup-plugin-babel';
 import minify from 'rollup-plugin-minify'
 
 export default {
-    entry: 'src/index.js',
-    format: 'umd',
+    input: 'src/index.js',
     plugins: [
         babel({
             include: 'src/**',
@@ -20,6 +19,19 @@ export default {
             dest: 'dist/index.min.js'
         }})
     ],
-    moduleName: 'i-apify',
-    dest: 'dist/index.js'
+    name: 'i-apify',
+    output: {
+        file: 'dist/index.js',
+        format: 'umd',
+    },
+    external: [
+        'underscore',
+        'deep-assign',
+        'query-string'
+    ],
+    globals: {
+        'underscore': 'u',
+        'deep-assign': 'deepAssign:',
+        'query-string': 'queryString'
+    },
 };

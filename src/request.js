@@ -10,9 +10,9 @@
 /* global Promise */
 /* global queryString */
 /* global deepAssign */
+/* global u */
 
 import u from 'underscore';
-import queryString from 'query-string';
 import deepAssign from 'deep-assign';
 
 import util from './util';
@@ -44,6 +44,16 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
     handler = Object.assign({}, handlers, handler);
     option = deepAssign({}, defaultConfig, {handler}, {hook}, option);
 
+    if (!option.METHOD[method]) {
+        return Promise.reject(handler.error({success: false, message: `The ${method} type doesn\'t support!`}));
+    }
+
+    method = option.METHOD[method];
+    option = Object.assign({}, option, {
+        'x-uri': uri,
+        'x-method': method
+    });
+
     if ('json' !== option.dataType.toLocaleLowerCase()) {
         return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}));
     }
@@ -67,8 +77,6 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
     globalHook.beforeRequest(option);
 
     let payload = sendRequest.getPayload(method, data, option);
-
-
     let promise = new Promise((resolve, reject) => {
         let networkTimeout = setTimeout(() => {
             /**
@@ -96,7 +104,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * hook: afterSuccessRequest()
                  */
-                globalHook.requestSuccess();
+                globalHook.requestSuccess(promise);
 
                 return response.json()
                     .then(json => {
@@ -117,7 +125,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * hook: requestFail()
                  */
-                globalHook.requestFail();
+                globalHook.requestFail(promise);
 
                 // 404, 500 ...
                 if (status && status !== 200) {
@@ -149,64 +157,20 @@ sendRequest.getPayload = (method, data, option) => {
     data = Object.assign(
         {},
         {method},
-        {headers: new Headers(headers)},
+        {headers},
         {body: data},
         credentials,
         fetchOption
     );
 
+    if ('GET' === method) {
+        delete data.body;
+    }
+
     /**
      * hook: beforeRequest
      */
-    return hook.payload(data);
+    return hook.payload(data, option);
 };
 
-let request = {};
-
-/**
- * post
- *
- * @param {string} uri
- * @param {?Object} data - 提交的数据
- * @param {?Object} option - 可以覆盖 fetch api的配置
- * @return {Promise}
- */
-
-request.post = (uri, data, option) => {
-    return sendRequest(METHOD.POST, uri, data, option);
-};
-
-/**
- * get
- *
- * 提供一个简单的get,规范中的请求都应该由post方式发送
- *
- * @param {string} uri
- * @param {string} data -  fromData
- * @param {?Object} option - 可以覆盖 fetch api的配置
- * @return {Promise}
- */
-
-request.get = (uri, data = '', option) => {
-    if (u.isObject(data)
-        && !u.isEmpty(data)) {
-
-        data = queryString.stringify(data);
-    }
-
-    if (data.length !== 0
-        && uri.indexOf('?') === -1) {
-        uri += '?';
-    }
-
-    uri += data;
-
-    let param = Object.assign({}, {method: METHOD.GET}, option);
-
-    return fetch(uri, {param});
-};
-
-// let put
-// let delete
-
-export default request;
+export default sendRequest;
