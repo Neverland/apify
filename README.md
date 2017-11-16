@@ -50,13 +50,13 @@ let api = apify(request.post, apiList, option);
 
 ## Usage
 
+```ecmascript 6
 /**
  * @param {JSON|string} payload
  * @param {?Object} option
  * @return Promise
  */
 
-```ecmascript 6
 /* global api */
 // 1.
 api.a({x:1, y:1})
