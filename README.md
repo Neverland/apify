@@ -13,10 +13,11 @@ api.method(payload, option);
 ## Description
 >  基于fetch api的前端数据链路层封装，可以达到一次配置随意轻松使用！
 
-apify 有两个方法
+apify 提供了以下功能
    - requset用于发送请求支持`POST`，`GET` 请求, `PUT`，`DELETE`需要自己扩展
    - apify 用于把配置处理为可以发送请求的函数化列表
    - 可以使用apify处理过的简单发送请求方式，也可以直接用requset发送请求
+   - i-apify 使用了fetch Api的polyfill，可以直接使用 Headers 和 Response 类
 
 ## Define
 
@@ -24,201 +25,213 @@ apify 有两个方法
 
 import {apify, request} from 'i-apify';
 
-let apiList = {
-    a: '/test/a',
-    b: 'test/b'
+let list = {
+    getUser: '/api/v1/getUser',
+    getCity: '/api/method/getCity?type=normal'
 };
 
-// global option
-
-let option = {
-    // 1.请求成功数据处理器，用于把数据处理为自己想要的格式
-    // 2.也可以使用
-    handler: {
-        success(data, promise) {
-            return data;
-        },
-        error(data, promise) {
-            return data;
-        }
-    },
-};
-
-let api = apify(request.post, apiList, option);
+export default apify(request.post, list, <option>);
 
 ```
 
 ## Usage
 
+### request 对象
+
+> request的post，get出了配合apify使用外均可以独立使用。
+
 ```ecmascript 6
-/**
- * @param {JSON|string} payload
- * @param {?Object} option
- * @return Promise
- */
 
-/* global api */
-// 1.
-api.a({x:1, y:1})
-    .then();
+import {request} from 'i-apify';
 
-// 2.
+request.post('/api/v1/getUser', payload, <option>);
+request.get('/api/method/getCity?type=normal', payload, <option>);
 
-api.a({x:1, y:1})
-    .then()
+```
+
+### apify处理后的函数使用
+
+|参数|说明|default|
+|---|----|----|
+|payload| {Object string} | null |
+|option|{Object=}|{}|
+
+### 1. 直接使用
+```ecmascript 6
+
+api.getUser({
+    id: ${userId},
+    name: ${userName}
+})
+    .then(response => {
+        // do something
+    })
     .catch();
 
-// 3.
+```
 
-// local option
-
-let option = {
-    handler: {
-        error() {
-            
-        },
-        success() {
-            
-        }
-    },
-    hook: {
-        beforeRequest() {
-            // ui loading
-        },
-        timeout() {
-            alert('Timeout!');
-        }
-    },
-    'x-message': false,
-    'x-silent': true,
-    headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    }
-};
-
-api.a({x:1, y:1}, option)
-    .then();
+### 2. 使用local option覆盖global option
+```ecmascript 6
+api.getCity(null, <option>)
+    .then()
+    .catch();
 ```
 
 ## Option
 
-api.a(url, payload, [option]);
+### 默认option及初始值
 
-通过option可以使用所有fetch api的配置参数
+|参数|default|说明|Fetch API 参数|
+|---|----|----|----|
+|method|POST|请求方式|Y|
+|credentials|same-origin|默认同域携带cookie|Y|
+|headers|'Accept': 'application/json' <br>'Content-Type':'application/json'|数据类型JSON|Y|
+|credentials|same-origin|默认请求时的header|Y|
+|dataType|json|收发数据类型json|N|
+|timeout|5000ms|超时时间|N|
+|x-silent|false|用于在hook或handler控制loading是否静默|N|
+|x-message|true|用于在hook或handler控制是否展示异常等逻辑，可以配合ui-dialog。|N|
 
-### fetch option
+### 全局配置与局部配置
+ >可以使用apify的option来配置所有方法，
+ 
+```ecmascript 6
+let option = {
+    timeout: 1000 * 10
+};
 
-关于fetch api
-[Fetch api](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+apify(request.post, list, option);
+```
 
-### default option
-
-/**
- *  @param {Object} option
- */
-
-1. 默认参数可以通过apify全局覆盖，也可以通过api.method(url, payload, option); 调用是通过第三个参数覆盖默认或者全局配置
-2. x-custom 可以用于hook的函数中
+>发送请求时可以对当前方法进行最终配置
 
 ```ecmascript 6
-    let option = {
-        'x-silent': false,
-        // 用于控制 ui dialog 抛出的信息
-        'x-message': true,
-        // 用于控制 ui dialog 抛出的信息
-        'x-timeout': 5000,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
-        handler: {
-            success(data, promise) {
-                return data;
-            },
-            error(data, promise) {
-                return data;
-            }
-        },
-        hook: {
-            beforeRequest() {
-            
-            },
-            payload(data) {
-                return data;
-            },
-            timeout() {
-        
-            },
-            requestSuccess() {
-        
-            },
-            requestFail() {
-        
+
+api.getUser(null, {
+    timeout: 1000 * 6,
+    dataType: 'formData' // formdata需要在payload hook中支持
+})
+    .then()
+    .catch();
+
+```
+
+```ecmascript 6
+import {apify, request} from 'i-apify';
+
+let list = {
+    getUser: '/api/v1/getUser',
+};
+
+let option = {
+    hook: {
+        beforeRequest({option}) {
+            if (!option['x-silent']) {
+                ui.loading.show();
             }
         }
-    };
-```
-
-### custom option
-
-#### hook fetch进程钩子函数
-
-```
-    beforeRequest: 发送请求前执行
-    payload: 获得payload后执行
-    timeout：超时时执行
-    requestSuccess: 请求成功后执行
-    requestFail：请求失败后执行
-```
-#### handler 请求后数据处理函数
-1. handler配置
-```ecmascript 6
-    // 此处的promise为api的promise对象
-    let option = {
-        handler: {
-            success(data, promise) {
-                // 可以在这里把数据处理成自己想要对格式
-                // 如果在这里使用promise会组织默认对处理逻辑
-            },
-            error(data, promise) {
-                // 可以在这里把数据处理成自己想要对格式
-                // 如果在这里使用promise会组织默认对处理逻辑
-                // promise.reject(data);
+    },
+    handler: {
+        error(error, option) {
+            let {data, message} = error;
+            
+            if (option['x-message']) {
+                ui.alert(message);
             }
         }
     }
+};
+
+let api = apify(request.post, list, option);
+
+// 请求时会有loading，错误会弹窗提示
+api.getUser(null)
+    .then()
+    .catch();
+
+// 局部配置会覆盖全局配置
+// 请求时不会有loading，错误不会弹窗提示
+api.getUser(null, {
+    'x-silent': true,
+    'x-message': false,
+})
+    .then()
+    .catch();
+
 ```
-#### 自定义配置
-通过option传递的自定义配置可以在hook中接收到，并不会影响fetch配置
+
+通过apify, 或者api.method的option参数可以使用所有fetch api的配置参数。
+
+### fetch option
+
+>关于fetch api, 可以通过option直接支持fetch api的配置。
+[Fetch api](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
+
 ```ecmascript 6
-    api.method(payload, {custom: true})
+
+let option = {
+    method: 'GET',
+    mode: 'cors',
+    cache: 'default' 
+};
+
+// global
+
+apify(request.post, list, option);
+
+// local
+api.getUser(payload, option);
 ```
 
-2.handler 接受到的data
+## hook
 
-```
-    // success data
-    {success: true, data: 接口返回的原始数据, message: 自定义message}
-    
-    // error data
-    {success: false, data: 接口返回的原始数据, message: 自定义message}
-```
-#### global config
+>通过hook函数可以对请求流程进行精细控制
 
+### hook fetch进程钩子函数
+
+|函数名|调用阶段|
+|----|----|
+|beforeRequest(option)|发送请求前执行|
+|payload(option, data)|获得payload后执行|
+|timeout(option)|超时时执行|
+|requestSuccess(option)|请求成功后执行|
+|requestFail(option)|请求失败后执行|
+
+## handler 请求后数据处理函数
+
+>使用handler可以对请求成功或者失败后对所所获取的数据或逻辑进行最后处理
+
+|参数|说明|
+|----|----|
+|data|通过fetch api所获得的数据|
+|option|请求时使用的最终配置|
+|promise|当前fetch api的实例|
+
+### handler配置
 ```ecmascript 6
-    apify(request.post, apiList, option)
-```
 
-#### local config
+import {apify, request} from 'i-apify';
 
-```ecmascript 6
-    api.method(payload, option)
-```
+let list = {
+    getUser: '/api/v1/getUser',
+};
+// 此处的promise为api的promise对象
+let option = {
+    handler: {
+        success(data, promise) {
+            // 可以在这里把数据处理成自己想要对格式
+            // 如果在这里使用promise会组织默认对处理逻辑
+        },
+        error(data, promise) {
+            // 可以在这里把数据处理成自己想要对格式
+            // 如果在这里使用promise会组织默认对处理逻辑
+            // promise.reject(data);
+        }
+    }
+}
 
-## Payload
-```
-{JSON|string}
+export default apify(request.post, list, option);
+
 ```
 
 ## Building & Testing
@@ -231,3 +244,5 @@ api.a(url, payload, [option]);
 ```
     npm run test
 ```
+
+## License MIT

@@ -77,7 +77,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             /**
              * hook: timeout
              */
-            globalHook.timeout();
+            globalHook.timeout(option);
 
             return reject(handler.error({type: false, message: 'network timeout!', data: {}}, promise));
         }, xTimeout);
@@ -99,12 +99,12 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * hook: requestSuccess()
                  */
-                globalHook.requestSuccess(promise);
+                globalHook.requestSuccess(option, promise);
 
                 return response.json()
                     .then(json => {
                         let data = {success: false, message: 'success', data: json};
-                        let result = handler.success(data, promise);
+                        let result = handler.success(data, option, promise);
 
                         if (util.isPromise(result)) {
                             return result;
@@ -122,13 +122,13 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * hook: requestFail()
                  */
-                globalHook.requestFail(promise);
+                globalHook.requestFail(option, promise);
 
                 // 404, 500 ...
                 if (status && status !== 200) {
                     let data = {success: false, message: statusText, data: error};
 
-                    result = handler.error(data, promise);
+                    result = handler.error(data, option, promise);
 
                     if (util.isPromise(result)) {
                         return result;
@@ -167,7 +167,7 @@ sendRequest.getPayload = (method, data, option) => {
     /**
      * hook: payload
      */
-    return hook.payload(data, option);
+    return hook.payload(option, data);
 };
 
 sendRequest.clearTimeout = timeout => {

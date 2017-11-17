@@ -337,8 +337,7 @@ module.exports = exports['default'];
  * @since 2017/9/5
  */
 
-/* global fetch */
-/* global Promise */
+/* global fetch, Promise */
 
 var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
 
@@ -410,7 +409,7 @@ function sendRequest() {
     var promise = new Promise(function (resolve, reject) {
         var networkTimeout = setTimeout(function () {
             /**
-             * hook: beforeRequest
+             * hook: timeout
              */
             globalHook.timeout();
 
@@ -431,7 +430,7 @@ function sendRequest() {
             }
 
             /**
-             * hook: afterSuccessRequest()
+             * hook: requestSuccess()
              */
             globalHook.requestSuccess(promise);
 
@@ -497,7 +496,7 @@ sendRequest.getPayload = function (method, data, option) {
     }
 
     /**
-     * hook: beforeRequest
+     * hook: payload
      */
     return hook.payload(data, option);
 };
