@@ -5,8 +5,7 @@
  * @since 2017/9/5
  */
 
-/* global fetch */
-/* global Promise */
+/* global fetch, Promise */
 
 import u from 'underscore';
 import deepAssign from 'deep-assign';
@@ -76,7 +75,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
     let promise = new Promise((resolve, reject) => {
         let networkTimeout = setTimeout(() => {
             /**
-             * hook: beforeRequest
+             * hook: timeout
              */
             globalHook.timeout();
 
@@ -98,7 +97,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 }
 
                 /**
-                 * hook: afterSuccessRequest()
+                 * hook: requestSuccess()
                  */
                 globalHook.requestSuccess(promise);
 
@@ -166,7 +165,7 @@ sendRequest.getPayload = (method, data, option) => {
     }
 
     /**
-     * hook: beforeRequest
+     * hook: payload
      */
     return hook.payload(data, option);
 };
