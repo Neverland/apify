@@ -57,7 +57,7 @@ request.get('/api/method/getCity?type=normal', payload, <option>);
 |option|{Object=}|{}|
 
 ### 1. 直接使用
-```ecmascript 6
+```javascript
 
 api.getUser({
     id: ${userId},
@@ -71,7 +71,7 @@ api.getUser({
 ```
 
 ### 2. 使用local option覆盖global option
-```ecmascript 6
+```javascript
 api.getCity(null, <option>)
     .then()
     .catch();
@@ -95,7 +95,7 @@ api.getCity(null, <option>)
 ### 全局配置与局部配置
  >可以使用apify的option来配置所有方法，
  
-```ecmascript 6
+```javascript
 let option = {
     timeout: 1000 * 10
 };
@@ -105,7 +105,7 @@ apify(request.post, list, option);
 
 >发送请求时可以对当前方法进行最终配置
 
-```ecmascript 6
+```javascript
 
 api.getUser(null, {
     timeout: 1000 * 6,
@@ -116,7 +116,7 @@ api.getUser(null, {
 
 ```
 
-```ecmascript 6
+```javascript
 import {apify, request} from 'i-apify';
 
 let list = {
@@ -167,7 +167,7 @@ api.getUser(null, {
 >关于fetch api, 可以通过option直接支持fetch api的配置。
 [Fetch api](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API)
 
-```ecmascript 6
+```javascript
 
 let option = {
     method: 'GET',
@@ -208,7 +208,7 @@ api.getUser(payload, option);
 |promise|当前fetch api的实例|
 
 ### handler配置
-```ecmascript 6
+```javascript
 
 import {apify, request} from 'i-apify';
 
