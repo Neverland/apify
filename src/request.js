@@ -101,17 +101,17 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                  */
                 globalHook.requestSuccess(option, promise);
 
-                return response.json()
-                    .then(json => {
-                        let data = {success: false, message: 'success', data: json};
-                        let result = handler.success(data, option, promise);
+                return response.json();
+            })
+            .then(json => {
+                let data = {success: false, message: 'success', data: json};
+                let result = handler.success(data, option, promise);
 
-                        if (util.isPromise(result)) {
-                            return result;
-                        }
+                if (util.isPromise(result)) {
+                    return result;
+                }
 
-                        return resolve(result || data);
-                    });
+                return resolve(result || data);
             })
             .catch(error => {
                 let result = {};
