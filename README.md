@@ -194,8 +194,8 @@ api.getUser(payload, option);
 |beforeRequest(option)|发送请求前执行|
 |payload(option, data)|获得payload后执行|
 |timeout(option)|超时时执行|
-|requestSuccess(option)|请求成功后执行|
-|requestFail(option)|请求失败后执行|
+|requestSuccess(option, response)|请求成功后执行|
+|requestFail(option, error)|请求失败后执行|
 
 ## handler 请求后数据处理函数
 
