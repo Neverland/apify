@@ -99,7 +99,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * hook: requestSuccess()
                  */
-                globalHook.requestSuccess(option, promise);
+                globalHook.requestSuccess(option, response);
 
                 return response.json();
             })
@@ -122,7 +122,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * hook: requestFail()
                  */
-                globalHook.requestFail(option, promise);
+                globalHook.requestFail(option, error);
 
                 // 404, 500 ...
                 if (status && status !== 200) {
