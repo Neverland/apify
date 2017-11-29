@@ -11,24 +11,30 @@ const STATE = {
     rejected: 2
 };
 
+const PENDING = 0;
+const FULFILLED = 1;
+const REJECTED = 2;
+
 class Promise {
     constructor(resolver) {
-        this.state = STATE.pending;
+        this.state = PENDING;
         this.value = null;
         this.callbackQueue = [];
 
         let resolve = result => {
-            if (this.state === STATE.pending) {
-                this.state = STATE.fulfilled;
+            if (this.state === PENDING) {
+                this.state = FULFILLED;
                 this.value = result;
 
-                this.callbackQueue.forEach(callback => callback(result));
+                setTimeout(() => {
+                    this.callbackQueue.forEach(callback => callback(result));
+                });
             }
         };
 
         let reject = error => {
-            if (this.state === STATE.pending) {
-                this.state = STATE.rejected;
+            if (this.state === PENDING) {
+                this.state = REJECTED;
                 this.value = error;
             }
         };
@@ -59,11 +65,11 @@ class Promise {
 
             this.callbackQueue.push(onResolvedHandler);
 
-            if (this.state === STATE.fulfilled) {
+            if (this.state === FULFILLED) {
                 onResolvedHandler(this.value);
             }
 
-            if (this.state === STATE.rejected) {
+            if (this.state === REJECTED) {
                 onRejectedHandler(this.value);
             }
         });
