@@ -1,40 +1,21 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('detect-node'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'detect-node', 'query-string'], factory) :
-	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.isNode,global.queryString));
-}(this, (function (u,deepAssign,isNode,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('detect-node'), require('underscore'), require('deep-assign'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['detect-node', 'underscore', 'deep-assign', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.isNode,global.u,global['deepAssign:'],global.queryString));
+}(this, (function (isNode,u,deepAssign,queryString) { 'use strict';
 
+isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
-isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
 queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
 
-var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
-
 /**
- * @file env
- * @author ienix(guoaimin01@baidu.com)
+ * @file fetch
+ * @author ienix(enix@foxmail.com)
  *
  * @since 2017/12/4
  */
 
-var fetchCall = (function () {
-  return Promise.resolve().then(function () {
-    if (isNode) {
-      return (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd ? new Promise(function (resolve, reject) {
-        _systemImportTransformerGlobalIdentifier.require(['node-fetch'], resolve, reject);
-      }) : typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || typeof module !== 'undefined' && module.component && _systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component' ? Promise.resolve(require(('node-fetch'))) : Promise.resolve(_systemImportTransformerGlobalIdentifier['node-fetch'])).then;
-    } else {
-
-      /**
-       * in browser runtime
-       */
-      return (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd ? new Promise(function (resolve, reject) {
-        _systemImportTransformerGlobalIdentifier.require(['whatwg-fetch'], resolve, reject);
-      }) : typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || typeof module !== 'undefined' && module.component && _systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component' ? Promise.resolve(require(('whatwg-fetch'))) : Promise.resolve(_systemImportTransformerGlobalIdentifier['whatwg-fetch'])).then;
-    }
-  });
-});
 module.exports = exports['default'];
 
 var babelHelpers = {};
@@ -445,16 +426,14 @@ function sendRequest() {
             return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, promise));
         }, xTimeout);
 
-        return fetchCall(function (fetch) {
-            if (!fetch) {
-                var _data = { type: false, message: 'The fetch is not defined!', data: {} };
-                var result = handler.error(_data, promise);
+        if (!fetch) {
+            var _data = { type: false, message: 'The fetch is not defined!', data: {} };
+            var result = handler.error(_data, promise);
 
-                return reject(result);
-            }
+            return reject(result);
+        }
 
-            return fetch(uri, payload);
-        }).then(function (response) {
+        return fetch(uri, payload).then(function (response) {
             if (response.status !== 200) {
                 sendRequest.clearTimeout(networkTimeout);
                 return reject(response);

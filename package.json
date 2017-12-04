@@ -1,11 +1,11 @@
 {
   "name": "i-apify",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A api solution for `node runtime` and `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
-    "test": "mocha",
-    "build": "rollup -c"
+    "test": "mocha test/spec.js",
+    "build": "rollup -c && mocha test/spec.js"
   },
   "repository": {
     "type": "git",

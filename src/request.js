@@ -7,10 +7,10 @@
 
 /* global fetch, Promise */
 
+import './fetch';
+
 import u from 'underscore';
 import deepAssign from 'deep-assign';
-
-import fetchCall from './fetch';
 
 import util from './util';
 
@@ -84,16 +84,14 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             return reject(handler.error({type: false, message: 'network timeout!', data: {}}, promise));
         }, xTimeout);
 
-        return fetchCall(fetch => {
-            if (!fetch) {
-                let data = {type: false, message: 'The fetch is not defined!', data: {}};
-                let result = handler.error(data, promise);
+        if (!fetch) {
+            let data = {type: false, message: 'The fetch is not defined!', data: {}};
+            let result = handler.error(data, promise);
 
-                return reject(result);
-            }
+            return reject(result);
+        }
 
-            return fetch(uri, payload)
-        })
+        return fetch(uri, payload)
             .then(response => {
                 if (response.status !== 200) {
                     sendRequest.clearTimeout(networkTimeout);

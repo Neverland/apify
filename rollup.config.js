@@ -32,6 +32,7 @@ export default {
     globals: {
         'underscore': 'u',
         'deep-assign': 'deepAssign:',
-        'query-string': 'queryString'
+        'query-string': 'queryString',
+        'detect-node': 'isNode'
     },
 };
