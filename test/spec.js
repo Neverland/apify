@@ -56,8 +56,8 @@ describe('iApify', function () {
     describe('api', function () {
         describe('#api', function () {
             it('api 的实例是promise实例', function () {
-                try{
-                    api.getData({}).should.be.a.Promise();
+                try {
+                    api.getData().catch().should.be.a.Promise();
                 }
                 catch (e) {}
             });
@@ -70,11 +70,12 @@ describe('iApify', function () {
 
                     option.hook.beforeRequest.toString().should.be.equal(beforeRequest.toString());
                 };
-                api.getData({}, {
+                api.getData('', {
                     hook: {
                         beforeRequest
                     }
-                });
+                })
+                    .catch();
             });
         });
     });

@@ -1,12 +1,12 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('detect-node'), require('underscore'), require('deep-assign'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['detect-node', 'underscore', 'deep-assign', 'query-string'], factory) :
-	(global['i-apify'] = factory(global.isNode,global.u,global['deepAssign:'],global.queryString));
-}(this, (function (isNode,u,deepAssign,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('detect-node'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'detect-node', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.isNode,global.queryString));
+}(this, (function (u,deepAssign,isNode,queryString) { 'use strict';
 
-isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
+isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
 queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
 
 /**
@@ -16,6 +16,24 @@ queryString = queryString && queryString.hasOwnProperty('default') ? queryString
  * @since 2017/12/4
  */
 
+var fetch = void 0;
+
+/**
+ * in node runtime
+ */
+if (isNode) {
+  fetch = require('node-fetch');
+}
+/**
+ * in browser runtime
+ */
+
+else {
+    require('whatwg-fetch');
+    fetch = window.fetch;
+  }
+
+var fetch$1 = fetch;
 module.exports = exports['default'];
 
 var babelHelpers = {};
@@ -311,7 +329,7 @@ module.exports = exports["default"];
 
 var hooks = {
     beforeRequest: function beforeRequest() {},
-    payload: function payload(data) {
+    payload: function payload(option, data) {
         return data;
     },
     timeout: function timeout() {},
@@ -426,19 +444,17 @@ function sendRequest() {
             return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, promise));
         }, xTimeout);
 
-        if (!fetch) {
+        if (!fetch$1) {
             var _data = { type: false, message: 'The fetch is not defined!', data: {} };
             var result = handler.error(_data, promise);
 
             return reject(result);
         }
-
-        return fetch(uri, payload).then(function (response) {
+        return fetch$1(uri, payload).then(function (response) {
             if (response.status !== 200) {
                 sendRequest.clearTimeout(networkTimeout);
                 return reject(response);
             }
-
             /**
              * hook: requestSuccess()
              */
@@ -459,7 +475,9 @@ function sendRequest() {
             var _error$status = error.status,
                 status = _error$status === undefined ? {} : _error$status,
                 _error$statusText = error.statusText,
-                statusText = _error$statusText === undefined ? 'Error' : _error$statusText;
+                statusText = _error$statusText === undefined ? '' : _error$statusText,
+                _error$message = error.message,
+                message = _error$message === undefined ? '' : _error$message;
 
 
             sendRequest.clearTimeout(networkTimeout);
@@ -471,7 +489,7 @@ function sendRequest() {
 
             // 404, 500 ...
             if (status && status !== 200) {
-                var _data2 = { success: false, message: statusText, data: error };
+                var _data2 = { success: false, message: statusText || message || 'Error', data: error };
 
                 result = handler.error(_data2, option, promise);
 
@@ -480,7 +498,7 @@ function sendRequest() {
                 }
             }
 
-            return reject(result);
+            return reject(error);
         });
     });
 

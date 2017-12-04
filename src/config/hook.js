@@ -9,7 +9,7 @@ export default {
     beforeRequest() {
 
     },
-    payload(data) {
+    payload(option, data) {
         return data;
     },
     timeout() {

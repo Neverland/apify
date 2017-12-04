@@ -10,7 +10,7 @@
 import u from 'underscore';
 import deepAssign from 'deep-assign';
 
-import fetchCall from './fetch';
+import fetch from './fetch';
 
 import util from './util';
 
@@ -51,6 +51,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
         'x-method': method
     });
 
+
     if ('json' !== option.dataType.toLocaleLowerCase()) {
         return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}));
     }
@@ -90,15 +91,12 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
             return reject(result);
         }
-
-        return fetchCall()
-            .then(fetch => fetch(uri, payload))
+        return fetch(uri, payload)
             .then(response => {
                 if (response.status !== 200) {
                     sendRequest.clearTimeout(networkTimeout);
                     return reject(response);
                 }
-
                 /**
                  * hook: requestSuccess()
                  */
@@ -118,7 +116,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             })
             .catch(error => {
                 let result = {};
-                let {status = {}, statusText = 'Error'} = error;
+                let {status = {}, statusText = '', message = ''} = error;
 
                 sendRequest.clearTimeout(networkTimeout);
 
@@ -129,7 +127,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
                 // 404, 500 ...
                 if (status && status !== 200) {
-                    let data = {success: false, message: statusText, data: error};
+                    let data = {success: false, message: statusText || message || 'Error', data: error};
 
                     result = handler.error(data, option, promise);
 
@@ -138,7 +136,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                     }
                 }
 
-                return reject(result);
+                return reject(error);
             });
     });
 

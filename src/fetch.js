@@ -7,27 +7,21 @@
 
 import isNode from 'detect-node';
 
-export default
-function () {
-    /**
-     * in node runtime
-     */
-    if (isNode) {
+let fetch;
 
-        return import('node-fetch')
-            .then(fetch => {
-                return fetch;
-            });
-
-        return;
-    }
-
-    /**
-     * in browser runtime
-     */
-
-    return import('whatwg-fetch')
-        .then(fetch => {
-            return window.fetch;
-        });
+/**
+ * in node runtime
+ */
+if (isNode) {
+    fetch = require('node-fetch');
 }
+/**
+ * in browser runtime
+ */
+
+else {
+    require('whatwg-fetch');
+    fetch = window.fetch;
+}
+
+export default fetch;
