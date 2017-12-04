@@ -9,14 +9,15 @@ import isNode from 'detect-node';
 
 export default
 function () {
-    let errorCatch = error => {throw new Error(error)};
     /**
      * in node runtime
      */
     if (isNode) {
 
-        import('node-fetch')
-            .catch(error => errorCatch);
+        return import('node-fetch')
+            .then(fetch => {
+                return fetch;
+            });
 
         return;
     }
@@ -25,6 +26,8 @@ function () {
      * in browser runtime
      */
 
-    import('whatwg-fetch')
-        .catch(error => errorCatch);
+    return import('whatwg-fetch')
+        .then(fetch => {
+            return window.fetch;
+        });
 }

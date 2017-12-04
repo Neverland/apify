@@ -7,10 +7,10 @@
 
 /* global fetch, Promise */
 
-import './fetch';
-
 import u from 'underscore';
 import deepAssign from 'deep-assign';
+
+import fetchCall from './fetch';
 
 import util from './util';
 
@@ -91,7 +91,8 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             return reject(result);
         }
 
-        return fetch(uri, payload)
+        return fetchCall()
+            .then(fetch => fetch(uri, payload))
             .then(response => {
                 if (response.status !== 200) {
                     sendRequest.clearTimeout(networkTimeout);
