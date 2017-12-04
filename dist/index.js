@@ -1,12 +1,41 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'query-string'], factory) :
-	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.queryString));
-}(this, (function (u,deepAssign,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('detect-node'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'detect-node', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.isNode,global.queryString));
+}(this, (function (u,deepAssign,isNode,queryString) { 'use strict';
 
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
+isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
 queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
+
+var _systemImportTransformerGlobalIdentifier = typeof window !== 'undefined' ? window : typeof self !== 'undefined' ? self : typeof global !== 'undefined' ? global : {};
+
+/**
+ * @file env
+ * @author ienix(guoaimin01@baidu.com)
+ *
+ * @since 2017/12/4
+ */
+
+var fetchCall = (function () {
+  return Promise.resolve().then(function () {
+    if (isNode) {
+      return (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd ? new Promise(function (resolve, reject) {
+        _systemImportTransformerGlobalIdentifier.require(['node-fetch'], resolve, reject);
+      }) : typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || typeof module !== 'undefined' && module.component && _systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component' ? Promise.resolve(require(('node-fetch'))) : Promise.resolve(_systemImportTransformerGlobalIdentifier['node-fetch'])).then;
+    } else {
+
+      /**
+       * in browser runtime
+       */
+      return (typeof _systemImportTransformerGlobalIdentifier.define === 'function' && _systemImportTransformerGlobalIdentifier.define.amd ? new Promise(function (resolve, reject) {
+        _systemImportTransformerGlobalIdentifier.require(['whatwg-fetch'], resolve, reject);
+      }) : typeof module !== 'undefined' && module.exports && typeof require !== 'undefined' || typeof module !== 'undefined' && module.component && _systemImportTransformerGlobalIdentifier.require && _systemImportTransformerGlobalIdentifier.require.loader === 'component' ? Promise.resolve(require(('whatwg-fetch'))) : Promise.resolve(_systemImportTransformerGlobalIdentifier['whatwg-fetch'])).then;
+    }
+  });
+});
+module.exports = exports['default'];
 
 var babelHelpers = {};
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
@@ -411,19 +440,21 @@ function sendRequest() {
             /**
              * hook: timeout
              */
-            globalHook.timeout();
+            globalHook.timeout(option);
 
             return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, promise));
         }, xTimeout);
 
-        if (!fetch) {
-            var _data = { type: false, message: 'The fetch is not defined!', data: {} };
-            var result = handler.error(_data, promise);
+        return fetchCall(function (fetch) {
+            if (!fetch) {
+                var _data = { type: false, message: 'The fetch is not defined!', data: {} };
+                var result = handler.error(_data, promise);
 
-            return reject(result);
-        }
+                return reject(result);
+            }
 
-        return fetch(uri, payload).then(function (response) {
+            return fetch(uri, payload);
+        }).then(function (response) {
             if (response.status !== 200) {
                 sendRequest.clearTimeout(networkTimeout);
                 return reject(response);
@@ -432,18 +463,18 @@ function sendRequest() {
             /**
              * hook: requestSuccess()
              */
-            globalHook.requestSuccess(promise);
+            globalHook.requestSuccess(option, response);
 
-            return response.json().then(function (json) {
-                var data = { success: false, message: 'success', data: json };
-                var result = handler.success(data, promise);
+            return response.json();
+        }).then(function (json) {
+            var data = { success: false, message: 'success', data: json };
+            var result = handler.success(data, option, promise);
 
-                if (util.isPromise(result)) {
-                    return result;
-                }
+            if (util.isPromise(result)) {
+                return result;
+            }
 
-                return resolve(result || data);
-            });
+            return resolve(result || data);
         }).catch(function (error) {
             var result = {};
             var _error$status = error.status,
@@ -457,13 +488,13 @@ function sendRequest() {
             /**
              * hook: requestFail()
              */
-            globalHook.requestFail(promise);
+            globalHook.requestFail(option, error);
 
             // 404, 500 ...
             if (status && status !== 200) {
                 var _data2 = { success: false, message: statusText, data: error };
 
-                result = handler.error(_data2, promise);
+                result = handler.error(_data2, option, promise);
 
                 if (util.isPromise(result)) {
                     return result;
@@ -498,7 +529,7 @@ sendRequest.getPayload = function (method, data, option) {
     /**
      * hook: payload
      */
-    return hook.payload(data, option);
+    return hook.payload(option, data);
 };
 
 sendRequest.clearTimeout = function (timeout) {

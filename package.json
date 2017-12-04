@@ -1,7 +1,7 @@
 {
   "name": "i-apify",
-  "version": "0.1.6",
-  "description": "A api solution for browser based Fetch api!",
+  "version": "0.2.0",
+  "description": "A api solution for `node runtime` and `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
     "test": "mocha",
@@ -19,7 +19,9 @@
   "homepage": "https://github.com/Neverland/apify#readme",
   "dependencies": {
     "deep-assign": "^2.0.0",
+    "detect-node": "^2.0.3",
     "es6-promise": "^4.1.1",
+    "node-fetch": "^1.7.3",
     "query-string": "^5.0.0",
     "underscore": "^1.8.3",
     "whatwg-fetch": "^2.0.3"
@@ -30,7 +32,9 @@
     "apify",
     "api",
     "i-apify",
-    "api salution"
+    "api salution",
+    "node fetch",
+    "nodejs fetch"
   ],
   "deprecated": false,
   "devDependencies": {
@@ -39,12 +43,16 @@
     "babel-plugin-array-includes": "^2.0.3",
     "babel-plugin-async-to-promises": "^1.0.5",
     "babel-plugin-external-helpers": "^6.22.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "babel-plugin-system-import-transformer": "^3.1.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015-rollup": "^3.0.0",
     "babel-runtime": "^6.25.0",
     "babelify": "^7.3.0",
+    "install": "^0.10.2",
     "mocha": "^3.5.0",
+    "npm": "^5.5.1",
     "rollup": "^0.49.2",
     "rollup-plugin-babel": "^2.7.1",
     "rollup-plugin-commonjs": "^8.0.2",

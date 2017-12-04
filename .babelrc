@@ -1,6 +1,7 @@
 {
     "presets": ["es2015-rollup"],
     "plugins": [
+        "system-import-transformer",
         "add-module-exports",
         "transform-object-assign",
         "async-to-promises",

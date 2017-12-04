@@ -1,7 +1,7 @@
 # apify
-A api solution for browser based Fetch api!
+A api solution for `node runtime` and `web browser` based Fetch api!
 
-> Auto-polyfill Promise, Fetch api! Support IE6+
+> Auto-polyfill Promise, Fetch api! Support IE6+ and Nodejs.
 
 [![Build Status](https://www.travis-ci.org/Neverland/apify.svg)](https://www.travis-ci.org/Neverland/apify)
 [![npm](https://img.shields.io/npm/v/i-apify.svg)](https://www.npmjs.com/package/i-apify)
@@ -233,6 +233,10 @@ let option = {
 export default apify(request.post, list, option);
 
 ```
+
+## Nodejs Option & Usage
+
+[node-fetch](https://www.npmjs.com/package/node-fetch)
 
 ## Building & Testing
 
