@@ -168,7 +168,7 @@ sendRequest.getPayload = (method, data, option) => {
     /**
      * hook: payload
      */
-    return hook.payload(option, data);
+    return hook.payload(option, data) || data;
 };
 
 sendRequest.clearTimeout = timeout => {
