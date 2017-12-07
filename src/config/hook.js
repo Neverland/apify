@@ -18,6 +18,9 @@ export default {
     requestSuccess() {
 
     },
+    afterParse() {
+
+    },
     requestFail() {
 
     }

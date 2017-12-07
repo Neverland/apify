@@ -329,11 +329,10 @@ module.exports = exports["default"];
 
 var hooks = {
     beforeRequest: function beforeRequest() {},
-    payload: function payload(option, data) {
-        return data;
-    },
+    payload: function payload() {},
     timeout: function timeout() {},
     requestSuccess: function requestSuccess() {},
+    afterParse: function afterParse() {},
     requestFail: function requestFail() {}
 };
 module.exports = exports["default"];
@@ -463,6 +462,12 @@ function sendRequest() {
             return response.json();
         }).then(function (json) {
             var data = { success: false, message: 'success', data: json };
+
+            /**
+             * hook: afterParse()
+             */
+            globalHook.afterParse(option, data);
+
             var result = handler.success(data, option, promise);
 
             if (util.isPromise(result)) {
@@ -526,7 +531,7 @@ sendRequest.getPayload = function (method, data, option) {
     /**
      * hook: payload
      */
-    return hook.payload(option, data);
+    return hook.payload(option, data) || data;
 };
 
 sendRequest.clearTimeout = function (timeout) {

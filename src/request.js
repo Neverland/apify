@@ -106,6 +106,12 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             })
             .then(json => {
                 let data = {success: false, message: 'success', data: json};
+
+                /**
+                 * hook: afterParse()
+                 */
+                globalHook.afterParse(option, data);
+
                 let result = handler.success(data, option, promise);
 
                 if (util.isPromise(result)) {

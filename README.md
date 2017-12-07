@@ -195,6 +195,7 @@ api.getUser(payload, option);
 |payload(option, data)|获得payload后执行|
 |timeout(option)|超时时执行|
 |requestSuccess(option, response)|请求成功后执行|
+|afterParse(option, data)|解析fetch的response后执行|
 |requestFail(option, error)|请求失败后执行|
 
 ## handler 请求后数据处理函数
