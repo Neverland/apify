@@ -16,6 +16,4 @@ import request from '../request';
  * @return {Promise}
  */
 
-export default (uri, data, option) => {
-    return request('POST', uri, data, option);
-};
+export default (uri, data, option) => request('POST', uri, data, option);

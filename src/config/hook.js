@@ -9,9 +9,6 @@ export default {
     beforeRequest() {
 
     },
-    payload() {
-
-    },
     timeout() {
 
     },

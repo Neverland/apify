@@ -56,21 +56,18 @@ describe('iApify', function () {
     describe('api', function () {
         describe('#api', function () {
             it('api 的实例是promise实例', function () {
-                try {
-                    api.getData().catch().should.be.a.Promise();
-                }
-                catch (e) {}
+                api.getData({}).catch().should.be.a.Promise();
             });
         });
 
         describe('#api', function () {
             it('api hook 可以正常执行，并且能够覆盖默认hook！', function () {
-                let beforeRequest = function (option) {
+                let beforeRequest =  option => {
                     option['x-silent'].should.be.equal(false);
 
                     option.hook.beforeRequest.toString().should.be.equal(beforeRequest.toString());
                 };
-                api.getData('', {
+                api.getData(null, {
                     hook: {
                         beforeRequest
                     }

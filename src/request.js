@@ -42,7 +42,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
     option = deepAssign({}, defaultConfig, {handler}, {hook}, option);
 
     if (!option.METHOD[method]) {
-        return Promise.reject(handler.error({success: false, message: `The ${method} type doesn\'t support!`}));
+        return Promise.reject(handler.error({success: false, message: `The ${method} type doesn\'t support!`}, option));
     }
 
     method = option.METHOD[method];
@@ -53,7 +53,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
 
     if ('json' !== option.dataType.toLocaleLowerCase()) {
-        return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}));
+        return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}, option));
     }
 
     let globalHook = option.hook;
@@ -66,7 +66,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
      * 'x-timeout'
      *
      */
-    let {silent, message, timeout} = X_OPTION_ENUM;
+    let {timeout} = X_OPTION_ENUM;
     let xTimeout = option[timeout];
 
     /**
@@ -74,7 +74,6 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
      */
     globalHook.beforeRequest(option);
 
-    let payload = sendRequest.getPayload(method, data, option);
     let promise = new Promise((resolve, reject) => {
         let networkTimeout = setTimeout(() => {
             /**
@@ -87,10 +86,16 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
         if (!fetch) {
             let data = {type: false, message: 'The fetch is not defined!', data: {}};
-            let result = handler.error(data, promise);
+            /**
+             * handler: error()
+             */
+            let result = handler.error(data, option, promise);
 
             return reject(result);
         }
+
+        let payload = sendRequest.getPayload(method, data, option, promise);
+
         return fetch(uri, payload)
             .then(response => {
                 if (response.status !== 200) {
@@ -112,6 +117,9 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                  */
                 globalHook.afterParse(option, data);
 
+                /**
+                 * handler: success()
+                 */
                 let result = handler.success(data, option, promise);
 
                 if (util.isPromise(result)) {
@@ -135,6 +143,9 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 if (status && status !== 200) {
                     let data = {success: false, message: statusText || message || 'Error', data: error};
 
+                    /**
+                     * handler: error()
+                     */
                     result = handler.error(data, option, promise);
 
                     if (util.isPromise(result)) {
@@ -142,15 +153,24 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                     }
                 }
 
-                return reject(error);
+                if (!status || !message) {
+                    return reject(error)
+                }
             });
     });
 
     return promise;
 }
 
-sendRequest.getPayload = (method, data, option) => {
-    let {credentials, headers, hook} = option;
+/**
+ * 获取最终payload
+ *
+ * @param {string} method - http method
+ * @param {string} data - 配置加数据产生的fetch option
+ * @param {Promise} promise - fetch 实例
+ */
+sendRequest.getPayload = (method, data, option, promise) => {
+    let {credentials, headers} = option;
 
     if ('string' !== typeof data) {
         data = JSON.stringify(data);
@@ -172,13 +192,11 @@ sendRequest.getPayload = (method, data, option) => {
     }
 
     /**
-     * hook: payload
+     * handler: payload()
      */
-    return hook.payload(option, data) || data;
+    return handlers.payload(data, option, promise) || data;
 };
 
-sendRequest.clearTimeout = timeout => {
-    clearTimeout(timeout);
-};
+sendRequest.clearTimeout = timeout => clearTimeout(timeout);
 
 export default sendRequest;

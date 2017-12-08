@@ -109,7 +109,7 @@ apify(request.post, list, option);
 
 api.getUser(null, {
     timeout: 1000 * 6,
-    dataType: 'formData' // formdata需要在payload hook中支持
+    dataType: 'formData' // formdata需要在payload handler中支持
 })
     .then()
     .catch();
@@ -192,7 +192,6 @@ api.getUser(payload, option);
 |函数名|调用阶段|
 |----|----|
 |beforeRequest(option)|发送请求前执行|
-|payload(option, data)|获得payload后执行|
 |timeout(option)|超时时执行|
 |requestSuccess(option, response)|请求成功后执行|
 |afterParse(option, data)|解析fetch的response后执行|
@@ -219,14 +218,17 @@ let list = {
 // 此处的promise为api的promise对象
 let option = {
     handler: {
-        success(data, promise) {
+        success(data, option, <promise>) {
             // 可以在这里把数据处理成自己想要对格式
             // 如果在这里使用promise会组织默认对处理逻辑
         },
-        error(data, promise) {
+        error(data, option, <promise>) {
             // 可以在这里把数据处理成自己想要对格式
             // 如果在这里使用promise会组织默认对处理逻辑
             // promise.reject(data);
+        },
+        payload(data, option, <promise>) {
+            // 可以在这里对fetch的option 进行处理
         }
     }
 }

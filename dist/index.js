@@ -311,10 +311,13 @@ module.exports = exports['default'];
  */
 
 var handlers = {
-    success: function success(data, promise) {
+    success: function success(data, option, fetchPromise) {
         return data;
     },
-    error: function error(data, promise) {
+    error: function error(data, option, fetchPromise) {
+        return data;
+    },
+    payload: function payload(data, option, fetchPromise) {
         return data;
     }
 };
@@ -329,7 +332,6 @@ module.exports = exports["default"];
 
 var hooks = {
     beforeRequest: function beforeRequest() {},
-    payload: function payload() {},
     timeout: function timeout() {},
     requestSuccess: function requestSuccess() {},
     afterParse: function afterParse() {},
@@ -398,7 +400,7 @@ function sendRequest() {
     option = deepAssign({}, defaultConfig, { handler: handler }, { hook: hook }, option);
 
     if (!option.METHOD[method]) {
-        return Promise.reject(handler.error({ success: false, message: 'The ' + method + ' type doesn\'t support!' }));
+        return Promise.reject(handler.error({ success: false, message: 'The ' + method + ' type doesn\'t support!' }, option));
     }
 
     method = option.METHOD[method];
@@ -408,7 +410,7 @@ function sendRequest() {
     });
 
     if ('json' !== option.dataType.toLocaleLowerCase()) {
-        return Promise.reject(handler.error({ success: false, message: 'Data type doesn\'t support!' }));
+        return Promise.reject(handler.error({ success: false, message: 'Data type doesn\'t support!' }, option));
     }
 
     var globalHook = option.hook;
@@ -421,9 +423,7 @@ function sendRequest() {
      * 'x-timeout'
      *
      */
-    var silent = X_OPTION_ENUM.silent,
-        message = X_OPTION_ENUM.message,
-        timeout = X_OPTION_ENUM.timeout;
+    var timeout = X_OPTION_ENUM.timeout;
 
     var xTimeout = option[timeout];
 
@@ -432,7 +432,6 @@ function sendRequest() {
      */
     globalHook.beforeRequest(option);
 
-    var payload = sendRequest.getPayload(method, data, option);
     var promise = new Promise(function (resolve, reject) {
         var networkTimeout = setTimeout(function () {
             /**
@@ -445,10 +444,16 @@ function sendRequest() {
 
         if (!fetch$1) {
             var _data = { type: false, message: 'The fetch is not defined!', data: {} };
-            var result = handler.error(_data, promise);
+            /**
+             * handler: error()
+             */
+            var result = handler.error(_data, option, promise);
 
             return reject(result);
         }
+
+        var payload = sendRequest.getPayload(method, data, option, promise);
+
         return fetch$1(uri, payload).then(function (response) {
             if (response.status !== 200) {
                 sendRequest.clearTimeout(networkTimeout);
@@ -468,6 +473,9 @@ function sendRequest() {
              */
             globalHook.afterParse(option, data);
 
+            /**
+             * handler: success()
+             */
             var result = handler.success(data, option, promise);
 
             if (util.isPromise(result)) {
@@ -496,6 +504,9 @@ function sendRequest() {
             if (status && status !== 200) {
                 var _data2 = { success: false, message: statusText || message || 'Error', data: error };
 
+                /**
+                 * handler: error()
+                 */
                 result = handler.error(_data2, option, promise);
 
                 if (util.isPromise(result)) {
@@ -503,17 +514,25 @@ function sendRequest() {
                 }
             }
 
-            return reject(error);
+            if (!status || !message) {
+                return reject(error);
+            }
         });
     });
 
     return promise;
 }
 
-sendRequest.getPayload = function (method, data, option) {
+/**
+ * 获取最终payload
+ *
+ * @param {string} method - http method
+ * @param {string} data - 配置加数据产生的fetch option
+ * @param {Promise} promise - fetch 实例
+ */
+sendRequest.getPayload = function (method, data, option, promise) {
     var credentials = option.credentials,
-        headers = option.headers,
-        hook = option.hook;
+        headers = option.headers;
 
 
     if ('string' !== typeof data) {
@@ -529,13 +548,13 @@ sendRequest.getPayload = function (method, data, option) {
     }
 
     /**
-     * hook: payload
+     * handler: payload()
      */
-    return hook.payload(option, data) || data;
+    return handlers.payload(data, option, promise) || data;
 };
 
 sendRequest.clearTimeout = function (timeout) {
-    clearTimeout(timeout);
+    return clearTimeout(timeout);
 };
 
 module.exports = exports['default'];
