@@ -1,6 +1,6 @@
 {
   "name": "i-apify",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "A api solution for `node runtime` and `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Neverland/apify#readme",
   "dependencies": {
     "deep-assign": "^2.0.0",
+    "detect-node": "^2.0.3",
     "es6-promise": "^4.1.1",
     "node-fetch": "^1.7.3",
     "query-string": "^5.0.0",
