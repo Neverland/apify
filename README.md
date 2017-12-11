@@ -6,6 +6,7 @@ A api solution for `node runtime` and `web browser` based Fetch api!
 [![Build Status](https://www.travis-ci.org/Neverland/apify.svg)](https://www.travis-ci.org/Neverland/apify)
 [![npm](https://img.shields.io/npm/v/i-apify.svg)](https://www.npmjs.com/package/i-apify)
 [![Github All Releases](https://img.shields.io/npm/dm/i-apify.svg)](https://www.npmjs.com/package/i-apify)
+[![codecov](https://codecov.io/gh/Neverland/apify/branch/master/graph/badge.svg)](https://codecov.io/gh/Neverland/apify)
 
 ```javascript
 api.method(payload, option);

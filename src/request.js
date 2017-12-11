@@ -51,7 +51,6 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
         'x-method': method
     });
 
-
     if ('json' !== option.dataType.toLocaleLowerCase()) {
         return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}, option));
     }
