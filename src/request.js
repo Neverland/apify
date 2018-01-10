@@ -80,7 +80,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
              */
             globalHook.timeout(option);
 
-            return reject(handler.error({type: false, message: 'network timeout!', data: {}}, promise));
+            return reject(handler.error({type: false, message: 'network timeout!', data: {}}, option, promise));
         }, xTimeout);
 
         if (!fetch) {
@@ -97,8 +97,9 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
         return fetch(uri, payload)
             .then(response => {
+                sendRequest.clearTimeout(networkTimeout);
+
                 if (response.status !== 200) {
-                    sendRequest.clearTimeout(networkTimeout);
                     return reject(response);
                 }
                 /**

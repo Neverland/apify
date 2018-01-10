@@ -439,7 +439,7 @@ function sendRequest() {
              */
             globalHook.timeout(option);
 
-            return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, promise));
+            return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, option, promise));
         }, xTimeout);
 
         if (!fetch$1) {
@@ -455,8 +455,9 @@ function sendRequest() {
         var payload = sendRequest.getPayload(method, data, option, promise);
 
         return fetch$1(uri, payload).then(function (response) {
+            sendRequest.clearTimeout(networkTimeout);
+
             if (response.status !== 200) {
-                sendRequest.clearTimeout(networkTimeout);
                 return reject(response);
             }
             /**
