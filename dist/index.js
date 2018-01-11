@@ -1,13 +1,12 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('whatwg-fetch'), require('detect-node'), require('node-fetch'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'whatwg-fetch', 'detect-node', 'node-fetch', 'query-string'], factory) :
-	(global['i-apify'] = factory(global.u,global['deepAssign:'],null,global.isNode,global.nodeFetch,global.queryString));
-}(this, (function (u,deepAssign,whatwgFetch,isNode,nodeFetch,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('detect-node'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'detect-node', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.isNode,global.queryString));
+}(this, (function (u,deepAssign,isNode,queryString) { 'use strict';
 
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
 isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
-nodeFetch = nodeFetch && nodeFetch.hasOwnProperty('default') ? nodeFetch['default'] : nodeFetch;
 queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
 
 /**
@@ -23,13 +22,14 @@ var fetch = void 0;
  * in node runtime
  */
 if (isNode) {
-  fetch = nodeFetch;
+  fetch = require('node-fetch');
 }
 /**
  * in browser runtime
  */
 
 else {
+    require('whatwg-fetch');
     fetch = window.fetch;
   }
 
