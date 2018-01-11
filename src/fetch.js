@@ -5,9 +5,7 @@
  * @since 2017/12/4
  */
 
-import 'whatwg-fetch';
 import isNode from 'detect-node';
-import nodeFetch from 'node-fetch';
 
 let fetch;
 
@@ -15,13 +13,14 @@ let fetch;
  * in node runtime
  */
 if (isNode) {
-    fetch = nodeFetch;
+    fetch = require('node-fetch');
 }
 /**
  * in browser runtime
  */
 
 else {
+    require('whatwg-fetch');
     fetch = window.fetch;
 }
 
