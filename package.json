@@ -1,6 +1,6 @@
 {
   "name": "i-apify",
-  "version": "0.3.9",
+  "version": "0.4.0",
   "description": "A api solution for `node runtime` and `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {

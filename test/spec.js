@@ -78,15 +78,15 @@ describe('iApify', function () {
             });
             it('4.3 api payload handler可以正常执行！', function () {
                 let data = {a: 1};
-                let payload =  payload => {
-                    payload.should.be.equal(data);
-                };
+
                 api.getData(data, {
                     handler: {
-                        payload
+                        payload: args => {
+                            args.should.be.equal(data);
+                        }
                     }
                 })
-                    .catch();
+                    .then(() => {}, () => {});
             });
         });
     });

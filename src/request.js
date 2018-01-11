@@ -42,7 +42,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
     option = deepAssign({}, defaultConfig, {handler}, {hook}, option);
 
     if (!option.METHOD[method]) {
-        return Promise.reject(handler.error({success: false, message: `The ${method} type doesn\'t support!`}, option));
+        return Promise.reject(option.handler.error({success: false, message: `The ${method} type doesn\'t support!`}, option));
     }
 
     method = option.METHOD[method];
@@ -52,7 +52,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
     });
 
     if ('json' !== option.dataType.toLocaleLowerCase()) {
-        return Promise.reject(handler.error({success: false, message: 'Data type doesn\'t support!'}, option));
+        return Promise.reject(option.handler.error({success: false, message: 'Data type doesn\'t support!'}, option));
     }
 
     let globalHook = option.hook;
@@ -80,7 +80,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
              */
             globalHook.timeout(option);
 
-            return reject(handler.error({type: false, message: 'network timeout!', data: {}}, option, promise));
+            return reject(option.handler.error({type: false, message: 'network timeout!', data: {}}, option, promise));
         }, xTimeout);
 
         if (!fetch) {
@@ -88,7 +88,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             /**
              * handler: error()
              */
-            let result = handler.error(data, option, promise);
+            let result = option.handler.error(data, option, promise);
 
             return reject(result);
         }
@@ -120,7 +120,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * handler: success()
                  */
-                let result = handler.success(data, option, promise);
+                let result = option.handler.success(data, option, promise);
 
                 if (util.isPromise(result)) {
                     return result;
@@ -146,7 +146,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                     /**
                      * handler: error()
                      */
-                    result = handler.error(data, option, promise);
+                    result = option.handler.error(data, option, promise);
 
                     if (util.isPromise(result)) {
                         return result;
@@ -194,7 +194,7 @@ sendRequest.getPayload = (method, data, option, promise) => {
     /**
      * handler: payload()
      */
-    return handlers.payload(data, option, promise) || data;
+    return option.handler.payload(data, option, promise) || data;
 };
 
 sendRequest.clearTimeout = timeout => clearTimeout(timeout);

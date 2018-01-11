@@ -361,7 +361,7 @@ function sendRequest() {
     option = deepAssign({}, defaultConfig, { handler: handler }, { hook: hook }, option);
 
     if (!option.METHOD[method]) {
-        return Promise.reject(handler.error({ success: false, message: 'The ' + method + ' type doesn\'t support!' }, option));
+        return Promise.reject(option.handler.error({ success: false, message: 'The ' + method + ' type doesn\'t support!' }, option));
     }
 
     method = option.METHOD[method];
@@ -371,7 +371,7 @@ function sendRequest() {
     });
 
     if ('json' !== option.dataType.toLocaleLowerCase()) {
-        return Promise.reject(handler.error({ success: false, message: 'Data type doesn\'t support!' }, option));
+        return Promise.reject(option.handler.error({ success: false, message: 'Data type doesn\'t support!' }, option));
     }
 
     var globalHook = option.hook;
@@ -400,7 +400,7 @@ function sendRequest() {
              */
             globalHook.timeout(option);
 
-            return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, option, promise));
+            return reject(option.handler.error({ type: false, message: 'network timeout!', data: {} }, option, promise));
         }, xTimeout);
 
         if (!fetch$1) {
@@ -408,7 +408,7 @@ function sendRequest() {
             /**
              * handler: error()
              */
-            var result = handler.error(_data, option, promise);
+            var result = option.handler.error(_data, option, promise);
 
             return reject(result);
         }
@@ -438,7 +438,7 @@ function sendRequest() {
             /**
              * handler: success()
              */
-            var result = handler.success(data, option, promise);
+            var result = option.handler.success(data, option, promise);
 
             if (util.isPromise(result)) {
                 return result;
@@ -469,7 +469,7 @@ function sendRequest() {
                 /**
                  * handler: error()
                  */
-                result = handler.error(_data2, option, promise);
+                result = option.handler.error(_data2, option, promise);
 
                 if (util.isPromise(result)) {
                     return result;
@@ -512,7 +512,7 @@ sendRequest.getPayload = function (method, data, option, promise) {
     /**
      * handler: payload()
      */
-    return handlers.payload(data, option, promise) || data;
+    return option.handler.payload(data, option, promise) || data;
 };
 
 sendRequest.clearTimeout = function (timeout) {
