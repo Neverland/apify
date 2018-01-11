@@ -36,7 +36,6 @@ else {
 var fetch$1 = fetch;
 module.exports = exports['default'];
 
-var babelHelpers = {};
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
 } : function (obj) {
@@ -187,44 +186,6 @@ var _extends = Object.assign || function (target) {
 
   return target;
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-babelHelpers;
 
 /**
  * @file util

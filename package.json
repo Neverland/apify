@@ -1,6 +1,6 @@
 {
   "name": "i-apify",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "A api solution for `node runtime` and `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
@@ -21,9 +21,9 @@
   "dependencies": {
     "deep-assign": "^2.0.0",
     "detect-node": "^2.0.3",
-    "es6-promise": "^4.1.1",
+    "es6-promise": "^4.2.2",
     "node-fetch": "^1.7.3",
-    "query-string": "^5.0.0",
+    "query-string": "^5.0.1",
     "underscore": "^1.8.3",
     "whatwg-fetch": "^2.0.3"
   },
@@ -41,24 +41,20 @@
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-array-includes": "^2.0.3",
     "babel-plugin-async-to-promises": "^1.0.5",
     "babel-plugin-external-helpers": "^6.22.0",
-    "babel-plugin-syntax-dynamic-import": "^6.18.0",
-    "babel-plugin-system-import-transformer": "^3.1.0",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-es2015-rollup": "^3.0.0",
     "babel-runtime": "^6.25.0",
     "babelify": "^7.3.0",
     "install": "^0.10.2",
-    "mocha": "^3.5.0",
-    "npm": "^5.5.1",
-    "rollup": "^0.49.2",
+    "mocha": "^3.5.3",
+    "rollup": "^0.49.3",
     "rollup-plugin-babel": "^2.7.1",
-    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-commonjs": "^8.2.6",
     "rollup-plugin-minify": "^1.0.3",
-    "rollup-plugin-node-resolve": "^3.0.0",
-    "should": "^13.0.1"
+    "rollup-plugin-node-resolve": "^3.0.2",
+    "should": "^13.2.0"
   }
 }
