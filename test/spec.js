@@ -5,6 +5,7 @@
  * @since 2017/9/8
  */
 
+/* global fetch */
 /* global describe */
 /* global require */
 /* global it */
@@ -17,6 +18,15 @@ let {apify, request} = iApify;
 
 let apiMap = {getData: '/get/data?_version=1'};
 let api = apify(request.post, apiMap);
+
+const NOOP = function () {};
+const OPTION = {
+    handler: {
+        payload: function() {
+            return new Promise(NOOP, NOOP);
+        }
+    }
+};
 
 // 单测中不需要使用this，所以不需要使用箭头函数
 
@@ -58,7 +68,9 @@ describe('iApify', function () {
     describe('4. api', function () {
         describe('#api', function () {
             it('4.1 api 的实例是promise实例', function () {
-                api.getData({}).catch().should.be.a.Promise();
+                api.getData({}, OPTION)
+                    .then(NOOP, NOOP)
+                    .catch().should.be.a.Promise();
             });
         });
 
@@ -69,24 +81,26 @@ describe('iApify', function () {
 
                     option.hook.beforeRequest.toString().should.be.equal(beforeRequest.toString());
                 };
+
                 api.getData(null, {
                     hook: {
                         beforeRequest
                     }
                 })
-                    .catch();
+                    .then(NOOP, NOOP);
             });
             it('4.3 api payload handler可以正常执行！', function () {
                 let data = {a: 1};
                 let payload =  payload => {
                     payload.should.be.equal(data);
                 };
+
                 api.getData(data, {
                     handler: {
                         payload
                     }
                 })
-                    .catch();
+                    .then(NOOP, NOOP);
             });
         });
     });

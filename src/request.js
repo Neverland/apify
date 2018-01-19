@@ -10,8 +10,6 @@
 import u from 'underscore';
 import deepAssign from 'deep-assign';
 
-import fetch from './fetch';
-
 import util from './util';
 
 import defaultConfig from './constants';
@@ -153,9 +151,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                     }
                 }
 
-                if (!status || !message) {
-                    return reject(error)
-                }
+                return reject(error);
             });
     });
 
@@ -200,3 +196,4 @@ sendRequest.getPayload = (method, data, option, promise) => {
 sendRequest.clearTimeout = timeout => clearTimeout(timeout);
 
 export default sendRequest;
+

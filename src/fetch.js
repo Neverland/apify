@@ -5,23 +5,8 @@
  * @since 2017/12/4
  */
 
-import isNode from 'detect-node';
+import 'whatwg-fetch';
 
-let fetch;
-
-/**
- * in node runtime
- */
-if (isNode) {
-    fetch = require('node-fetch');
+if (!this.fetch) {
+    this.fetch = null;
 }
-/**
- * in browser runtime
- */
-
-else {
-    require('whatwg-fetch');
-    fetch = window.fetch;
-}
-
-export default fetch;

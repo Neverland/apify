@@ -1,40 +1,12 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('detect-node'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'detect-node', 'query-string'], factory) :
-	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.isNode,global.queryString));
-}(this, (function (u,deepAssign,isNode,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.queryString));
+}(this, (function (u,deepAssign,queryString) { 'use strict';
 
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
-isNode = isNode && isNode.hasOwnProperty('default') ? isNode['default'] : isNode;
 queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
-
-/**
- * @file fetch
- * @author ienix(enix@foxmail.com)
- *
- * @since 2017/12/4
- */
-
-var fetch = void 0;
-
-/**
- * in node runtime
- */
-if (isNode) {
-  fetch = require('node-fetch');
-}
-/**
- * in browser runtime
- */
-
-else {
-    require('whatwg-fetch');
-    fetch = window.fetch;
-  }
-
-var fetch$1 = fetch;
-module.exports = exports['default'];
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -403,7 +375,7 @@ function sendRequest() {
             return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, option, promise));
         }, xTimeout);
 
-        if (!fetch$1) {
+        if (!fetch) {
             var _data = { type: false, message: 'The fetch is not defined!', data: {} };
             /**
              * handler: error()
@@ -415,7 +387,7 @@ function sendRequest() {
 
         var payload = sendRequest.getPayload(method, data, option, promise);
 
-        return fetch$1(uri, payload).then(function (response) {
+        return fetch(uri, payload).then(function (response) {
             sendRequest.clearTimeout(networkTimeout);
 
             if (response.status !== 200) {
@@ -476,9 +448,7 @@ function sendRequest() {
                 }
             }
 
-            if (!status || !message) {
-                return reject(error);
-            }
+            return reject(error);
         });
     });
 
