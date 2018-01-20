@@ -468,7 +468,13 @@ sendRequest.getPayload = function (method, data, option, promise) {
 
 
     if ('string' !== typeof data) {
-        data = JSON.stringify(data);
+        data = JSON.stringify(data, function (key, value) {
+            if (undefined === value) {
+                return null;
+            }
+
+            return value;
+        });
     }
 
     var fetchOption = u.pick(option, fetchOptionList);
