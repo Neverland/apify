@@ -169,7 +169,13 @@ sendRequest.getPayload = (method, data, option, promise) => {
     let {credentials, headers} = option;
 
     if ('string' !== typeof data) {
-        data = JSON.stringify(data);
+        data = JSON.stringify(data, (key, value) => {
+            if (undefined === value) {
+                return null;
+            }
+
+            return value;
+        });
     }
 
     let fetchOption = u.pick(option, fetchOptionList);
