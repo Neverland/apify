@@ -196,7 +196,7 @@ sendRequest.getPayload = (method, data, option, promise) => {
     /**
      * handler: payload()
      */
-    return handlers.payload(data, option, promise) || data;
+    return option.handler.payload(data, option, promise) || data;
 };
 
 sendRequest.clearTimeout = timeout => clearTimeout(timeout);

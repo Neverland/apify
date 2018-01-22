@@ -1,6 +1,6 @@
 {
   "name": "i-apify",
-  "version": "0.4.4",
+  "version": "0.4.6",
   "description": "A api solution for `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
