@@ -6,7 +6,3 @@
  */
 
 import 'whatwg-fetch';
-
-if (!this.fetch) {
-    this.fetch = null;
-}

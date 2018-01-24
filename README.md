@@ -206,7 +206,6 @@ api.getUser(payload, option);
 |----|----|
 |data|通过fetch api所获得的数据|
 |option|请求时使用的最终配置|
-|promise|当前fetch api的实例|
 
 ### handler配置
 ```javascript
@@ -216,19 +215,17 @@ import {apify, request} from 'i-apify';
 let list = {
     getUser: '/api/v1/getUser',
 };
-// 此处的promise为api的promise对象
+
 let option = {
     handler: {
-        success(data, option, <promise>) {
+        success(data, option) {
             // 可以在这里把数据处理成自己想要对格式
-            // 如果在这里使用promise会组织默认对处理逻辑
         },
-        error(data, option, <promise>) {
+        error(data, option) {
             // 可以在这里把数据处理成自己想要对格式
-            // 如果在这里使用promise会组织默认对处理逻辑
-            // promise.reject(data);
+            // return Promise.reject(data);
         },
-        payload(data, option, <promise>) {
+        payload(data, option) {
             // 可以在这里对fetch的option 进行处理
         }
     }

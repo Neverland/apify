@@ -71,14 +71,14 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
      */
     globalHook.beforeRequest(option);
 
-    let promise = new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         let networkTimeout = setTimeout(() => {
             /**
              * hook: timeout
              */
             globalHook.timeout(option);
 
-            return reject(handler.error({type: false, message: 'network timeout!', data: {}}, option, promise));
+            return reject(handler.error({type: false, message: 'network timeout!', data: {}}, option));
         }, xTimeout);
 
         if (!fetch) {
@@ -86,19 +86,19 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             /**
              * handler: error()
              */
-            let result = handler.error(data, option, promise);
+            let result = handler.error(data, option);
 
             return reject(result);
         }
 
-        let payload = sendRequest.getPayload(method, data, option, promise);
+        let payload = sendRequest.getPayload(method, data, option);
 
         return fetch(uri, payload)
             .then(response => {
                 sendRequest.clearTimeout(networkTimeout);
 
                 if (response.status !== 200) {
-                    return reject(response);
+                    return Promise.reject(response);
                 }
                 /**
                  * hook: requestSuccess()
@@ -118,7 +118,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 /**
                  * handler: success()
                  */
-                let result = handler.success(data, option, promise);
+                let result = handler.success(data, option);
 
                 if (util.isPromise(result)) {
                     return result;
@@ -144,7 +144,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                     /**
                      * handler: error()
                      */
-                    result = handler.error(data, option, promise);
+                    result = handler.error(data, option);
 
                     if (util.isPromise(result)) {
                         return result;
@@ -154,8 +154,6 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 return reject(error);
             });
     });
-
-    return promise;
 }
 
 /**
@@ -165,7 +163,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
  * @param {string} data - 配置加数据产生的fetch option
  * @param {Promise} promise - fetch 实例
  */
-sendRequest.getPayload = (method, data, option, promise) => {
+sendRequest.getPayload = (method, data, option) => {
     let {credentials, headers} = option;
 
     if ('string' !== typeof data) {
@@ -196,7 +194,7 @@ sendRequest.getPayload = (method, data, option, promise) => {
     /**
      * handler: payload()
      */
-    return option.handler.payload(data, option, promise) || data;
+    return option.handler.payload(data, option) || data;
 };
 
 sendRequest.clearTimeout = timeout => clearTimeout(timeout);

@@ -6,13 +6,13 @@
  */
 
 export default {
-    success(data, option, fetchPromise) {
+    success(data) {
         return data;
     },
-    error(data, option, fetchPromise) {
+    error(data) {
         return data;
     },
-    payload(data, option, fetchPromise) {
+    payload(data) {
         return data;
     }
 };

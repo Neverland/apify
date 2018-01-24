@@ -244,13 +244,13 @@ module.exports = exports['default'];
  */
 
 var handlers = {
-    success: function success(data, option, fetchPromise) {
+    success: function success(data) {
         return data;
     },
-    error: function error(data, option, fetchPromise) {
+    error: function error(data) {
         return data;
     },
-    payload: function payload(data, option, fetchPromise) {
+    payload: function payload(data) {
         return data;
     }
 };
@@ -365,14 +365,14 @@ function sendRequest() {
      */
     globalHook.beforeRequest(option);
 
-    var promise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
         var networkTimeout = setTimeout(function () {
             /**
              * hook: timeout
              */
             globalHook.timeout(option);
 
-            return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, option, promise));
+            return reject(handler.error({ type: false, message: 'network timeout!', data: {} }, option));
         }, xTimeout);
 
         if (!fetch) {
@@ -380,18 +380,18 @@ function sendRequest() {
             /**
              * handler: error()
              */
-            var result = handler.error(_data, option, promise);
+            var result = handler.error(_data, option);
 
             return reject(result);
         }
 
-        var payload = sendRequest.getPayload(method, data, option, promise);
+        var payload = sendRequest.getPayload(method, data, option);
 
         return fetch(uri, payload).then(function (response) {
             sendRequest.clearTimeout(networkTimeout);
 
             if (response.status !== 200) {
-                return reject(response);
+                return Promise.reject(response);
             }
             /**
              * hook: requestSuccess()
@@ -410,7 +410,7 @@ function sendRequest() {
             /**
              * handler: success()
              */
-            var result = handler.success(data, option, promise);
+            var result = handler.success(data, option);
 
             if (util.isPromise(result)) {
                 return result;
@@ -441,7 +441,7 @@ function sendRequest() {
                 /**
                  * handler: error()
                  */
-                result = handler.error(_data2, option, promise);
+                result = handler.error(_data2, option);
 
                 if (util.isPromise(result)) {
                     return result;
@@ -451,8 +451,6 @@ function sendRequest() {
             return reject(error);
         });
     });
-
-    return promise;
 }
 
 /**
@@ -462,7 +460,7 @@ function sendRequest() {
  * @param {string} data - 配置加数据产生的fetch option
  * @param {Promise} promise - fetch 实例
  */
-sendRequest.getPayload = function (method, data, option, promise) {
+sendRequest.getPayload = function (method, data, option) {
     var credentials = option.credentials,
         headers = option.headers;
 
@@ -488,7 +486,7 @@ sendRequest.getPayload = function (method, data, option, promise) {
     /**
      * handler: payload()
      */
-    return option.handler.payload(data, option, promise) || data;
+    return option.handler.payload(data, option) || data;
 };
 
 sendRequest.clearTimeout = function (timeout) {
