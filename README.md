@@ -218,15 +218,18 @@ let list = {
 
 let option = {
     handler: {
-        success(data, option) {
+        success(result, option) {
             // 可以在这里把数据处理成自己想要对格式
         },
         error(data, option) {
             // 可以在这里把数据处理成自己想要对格式
-            // return Promise.reject(data);
+            return data;
         },
         payload(data, option) {
             // 可以在这里对fetch的option 进行处理
+            /* global cleenDeep */
+
+            return cleenDeep(data);
         }
     }
 }
@@ -235,9 +238,32 @@ export default apify(request.post, list, option);
 
 ```
 
-## Nodejs Option & Usage
+## 配合async awiat 使用
 
-[node-fetch](https://www.npmjs.com/package/node-fetch)
+```javascript
+let option = {
+    handler: {
+        success(result, option) {
+            // 可以在这里对response在进行细分
+            if (result.success) {
+                return result.data;
+            }
+            
+            return Promise.reject({data: [1, 2, 3]});
+        }
+    }
+}
+
+async function () {
+    try {
+        await api.getUser();
+    }
+    catch(e) {
+        console.log(e.data) // [1, 2, 3]
+    }
+}
+
+```
 
 ## Building & Testing
 
