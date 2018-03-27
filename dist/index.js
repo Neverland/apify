@@ -400,7 +400,7 @@ function sendRequest() {
 
             return response.json();
         }).then(function (json) {
-            var data = { success: false, message: 'success', data: json };
+            var data = { success: true, message: 'success', data: json };
 
             /**
              * hook: afterParse()
