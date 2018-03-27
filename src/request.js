@@ -108,7 +108,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 return response.json();
             })
             .then(json => {
-                let data = {success: false, message: 'success', data: json};
+                let data = {success: true, message: 'success', data: json};
 
                 /**
                  * hook: afterParse()
