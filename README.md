@@ -87,7 +87,7 @@ api.getCity(null, <option>)
 |method|POST|请求方式|Y|
 |credentials|same-origin|默认同域携带cookie|Y|
 |headers|'Accept': 'application/json' <br>'Content-Type':'application/json'|数据类型JSON|Y|
-|credentials|same-origin|默认请求时的header|Y|
+|credentials|same-origin|影响携带cookie，携带cookie有问题时配置为include|Y|
 |dataType|json|收发数据类型json|N|
 |timeout|5000ms|超时时间|N|
 |x-silent|false|用于在hook或handler控制loading是否静默|N|
