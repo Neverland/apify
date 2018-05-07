@@ -1,8 +1,8 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('es6-promise'), require('underscore'), require('deep-assign'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['es6-promise', 'underscore', 'deep-assign', 'query-string'], factory) :
-	(global['i-apify'] = factory(null,global.u,global['deepAssign:'],global.queryString));
-}(this, (function (es6Promise,u,deepAssign,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'query-string'], factory) :
+	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.queryString));
+}(this, (function (u,deepAssign,queryString) { 'use strict';
 
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
