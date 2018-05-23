@@ -5,7 +5,9 @@
  * @since 2017/9/5
  */
 
-/* global fetch, Promise */
+/* global Promise */
+
+import './fetch';
 
 import u from 'underscore';
 import deepAssign from 'deep-assign';

@@ -1,12 +1,19 @@
 (function (global, factory) {
-	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('underscore'), require('deep-assign'), require('query-string')) :
-	typeof define === 'function' && define.amd ? define(['underscore', 'deep-assign', 'query-string'], factory) :
-	(global['i-apify'] = factory(global.u,global['deepAssign:'],global.queryString));
-}(this, (function (u,deepAssign,queryString) { 'use strict';
+	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('whatwg-fetch'), require('underscore'), require('deep-assign'), require('query-string')) :
+	typeof define === 'function' && define.amd ? define(['whatwg-fetch', 'underscore', 'deep-assign', 'query-string'], factory) :
+	(global['i-apify'] = factory(null,global.u,global['deepAssign:'],global.queryString));
+}(this, (function (whatwgFetch,u,deepAssign,queryString) { 'use strict';
 
 u = u && u.hasOwnProperty('default') ? u['default'] : u;
 deepAssign = deepAssign && deepAssign.hasOwnProperty('default') ? deepAssign['default'] : deepAssign;
 queryString = queryString && queryString.hasOwnProperty('default') ? queryString['default'] : queryString;
+
+/**
+ * @file fetch
+ * @author ienix(enix@foxmail.com)
+ *
+ * @since 2017/12/4
+ */
 
 var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
   return typeof obj;
@@ -299,7 +306,7 @@ module.exports = exports['default'];
  * @since 2017/9/5
  */
 
-/* global fetch, Promise */
+/* global Promise */
 
 var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
 

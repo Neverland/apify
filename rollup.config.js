@@ -27,12 +27,12 @@ export default {
     external: [
         'underscore',
         'deep-assign',
-        'query-string'
+        'query-string',
+        'whatwg-fetch'
     ],
     globals: {
         'underscore': 'u',
         'deep-assign': 'deepAssign:',
-        'query-string': 'queryString',
-        'detect-node': 'isNode'
+        'query-string': 'queryString'
     },
 };
