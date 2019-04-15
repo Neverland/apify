@@ -32,7 +32,7 @@ const X_OPTION_ENUM = {
  * @const same-origin 只有同源有这个配置才能传递cookie
  */
 const CREDENTIALS = {
-    credentials: 'same-origin'
+    credentials: 'include'
 };
 
 const X_OPTION = {

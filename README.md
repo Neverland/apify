@@ -83,9 +83,8 @@ api.getCity(null, <option>)
 |参数|default|说明|Fetch API 参数|
 |---|----|----|----|
 |method|POST|请求方式|Y|
-|credentials|same-origin|默认同域携带cookie|Y|
+|credentials|include|默认可以跨域请求|Y|
 |headers|'Accept': 'application/json' <br>'Content-Type':'application/json'|数据类型JSON|Y|
-|credentials|same-origin|影响携带cookie，携带cookie有问题时配置为include|Y|
 |dataType|json|收发数据类型json|N|
 |timeout|5000ms|超时时间|N|
 |x-silent|false|用于在hook或handler控制loading是否静默|N|

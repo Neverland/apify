@@ -214,7 +214,7 @@ var X_OPTION_ENUM$1 = {
  * @const same-origin 只有同源有这个配置才能传递cookie
  */
 var CREDENTIALS = {
-    credentials: 'same-origin'
+    credentials: 'include'
 };
 
 var X_OPTION = {
