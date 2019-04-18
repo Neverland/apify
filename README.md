@@ -86,7 +86,7 @@ api.getCity(null, <option>)
 |credentials|include|默认可以跨域请求|Y|
 |headers|'Accept': 'application/json' <br>'Content-Type':'application/json'|数据类型JSON|Y|
 |dataType|json|收发数据类型json|N|
-|timeout|5000ms|超时时间|N|
+|x-timeout|5000ms|超时时间|N|
 |x-silent|false|用于在hook或handler控制loading是否静默|N|
 |x-message|true|用于在hook或handler控制是否展示异常等逻辑，可以配合ui-dialog。|N|
 
@@ -95,7 +95,7 @@ api.getCity(null, <option>)
  
 ```javascript
 let option = {
-    timeout: 1000 * 10
+    'x-timeout': 1000 * 10
 };
 
 apify(request.post, list, option);
