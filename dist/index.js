@@ -394,7 +394,7 @@ function sendRequest() {
 
         var payload = sendRequest.getPayload(method, data, option);
 
-        return fetch(uri, payload).then(function (response) {
+        return fetch(option['x-uri'], payload).then(function (response) {
             sendRequest.clearTimeout(networkTimeout);
 
             if (response.status !== 200) {
@@ -542,37 +542,37 @@ module.exports = exports['default'];
  */
 
 var get$1 = (function (uri) {
-  var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var option = arguments[2];
+    var data = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var option = arguments[2];
 
-  /**
-   * @property {Object} search - 用于收集uri上的search
-   */
-  var search = {};
-  /**
-   * @property {string} pureUri - 用于存储除search外的根链接
-   */
-  var pureUri = uri;
-  /**
-   * @property {string} hasSearch - 用于标示uri中是否有`search`
-   */
-  var hasSearch = uri.indexOf('?') > -1;
+    /**
+     * @property {Object} search - 用于收集uri上的search
+     */
+    var search = {};
+    /**
+     * @property {string} pureUri - 用于存储除search外的根链接
+     */
+    var pureUri = uri;
+    /**
+     * @property {string} hasSearch - 用于标示uri中是否有`search`
+     */
+    var hasSearch = uri.indexOf('?') > -1;
 
-  if (hasSearch) {
-    var temp = uri.split('?');
+    if (hasSearch) {
+        var temp = uri.split('?');
 
-    pureUri = temp[0];
-    search = queryString.parse(temp[1]);
-  }
+        pureUri = temp[0];
+        search = queryString.parse(temp[1]);
+    }
 
-  var payload = _extends({}, search, data);
-  var query = queryString.stringify(payload);
+    var payload = _extends({}, search, data);
+    var query = queryString.stringify(payload);
 
-  if (query) {
-    uri = pureUri + '?' + query;
-  }
+    if (query) {
+        uri = pureUri + '?' + query;
+    }
 
-  return sendRequest('GET', uri, '', option);
+    return sendRequest('GET', uri, '', option);
 });
 module.exports = exports['default'];
 
@@ -622,30 +622,30 @@ module.exports = exports['default'];
  * @return {Object}
  */
 var apify = function (sendRequest) {
-  var apis = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-  var configure = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var apis = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var configure = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
 
-  apis = _extends({}, apis);
+    apis = _extends({}, apis);
 
-  var all = Object.keys(apis || {});
+    var all = Object.keys(apis || {});
 
-  all.forEach(function (key) {
-    var origin = _extends(apis[key]);
+    all.forEach(function (key) {
+        var origin = _extends(apis[key]);
 
-    apis[key] = function (options, config) {
-      var param = _extends({}, options);
+        apis[key] = function (options, config) {
+            var param = _extends({}, options);
 
-      return sendRequest(origin, param, _extends({}, configure, config));
-    };
+            return sendRequest(origin, param, _extends({}, configure, config));
+        };
 
-    apis[key].origin || (apis[key].origin = origin);
+        apis[key].origin || (apis[key].origin = origin);
 
-    apis[key].getUrl = function () {
-      return origin.toString();
-    };
-  });
+        apis[key].getUrl = function () {
+            return origin.toString();
+        };
+    });
 
-  return apis || {};
+    return apis || {};
 };
 module.exports = exports["default"];
 

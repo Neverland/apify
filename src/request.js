@@ -95,7 +95,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
         let payload = sendRequest.getPayload(method, data, option);
 
-        return fetch(uri, payload)
+        return fetch(option['x-uri'], payload)
             .then(response => {
                 sendRequest.clearTimeout(networkTimeout);
 
