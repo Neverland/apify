@@ -31,9 +31,7 @@ const X_OPTION_ENUM = {
 /**
  * @const same-origin 只有同源有这个配置才能传递cookie
  */
-const CREDENTIALS = {
-    credentials: 'include'
-};
+const CREDENTIALS = 'omit';
 
 const X_OPTION = {
     // 用于控制 ui loading

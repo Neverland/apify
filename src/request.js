@@ -185,7 +185,7 @@ sendRequest.getPayload = (method, data, option) => {
         {method},
         {headers},
         {body: data},
-        credentials,
+        {credentials},
         fetchOption
     );
 
