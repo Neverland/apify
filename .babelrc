@@ -1,10 +1,15 @@
 {
-    "presets": ["es2015-rollup"],
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "modules": false
+            }
+        ]
+    ],
     "plugins": [
-        "add-module-exports",
-        "transform-object-assign",
-        "async-to-promises",
-        "external-helpers"
+ 
+        "@babel/plugin-transform-parameters"
     ],
     "ignore": [
         "dist/*.js"
