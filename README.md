@@ -127,12 +127,18 @@ let option = {
             if (!option['x-silent']) {
                 ui.loading.show();
             }
+        },
+        requestSuccess(data) {
+            if (!option['x-silent']) {
+                ui.loading.hide();
+            }
         }
     },
     handler: {
-        error(error, option) {
-            let {data, message} = error;
-            
+        success({data, message}, option) {
+
+        },
+        error({data, message}, option) {
             if (option['x-message']) {
                 ui.alert(message);
             }
@@ -240,13 +246,13 @@ export default apify(request.post, list, option);
 ```javascript
 let option = {
     handler: {
-        success(result, option) {
+        success({data, success}, option) {
             // 可以在这里对response在进行细分
-            if (result.success) {
-                return result.data;
+            if (success) {
+                return Promise.resolve(data);
             }
             
-            return Promise.reject({data: [1, 2, 3]});
+            return Promise.reject([1, 2, 3]);
         }
     }
 }
@@ -255,8 +261,8 @@ async function () {
     try {
         await api.getUser();
     }
-    catch(e) {
-        console.log(e.data) // [1, 2, 3]
+    catch({data}) {
+        console.log(data) // [1, 2, 3]
     }
 }
 
