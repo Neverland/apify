@@ -259,7 +259,11 @@
         globalHook.requestSuccess(option, response);
         return response.json();
       }).then(function (json) {
-        var data = json || {};
+        var data = {
+          success: true,
+          message: 'success',
+          data: json
+        };
         /**
          * hook: afterParse()
          */
@@ -275,13 +279,15 @@
           return result;
         }
 
-        return resolve(data);
+        return resolve(result || data);
       })["catch"](function (error) {
         var result = {};
         var _error$status = error.status,
             status = _error$status === void 0 ? {} : _error$status,
             _error$statusText = error.statusText,
-            _error$message = error.message;
+            statusText = _error$statusText === void 0 ? '' : _error$statusText,
+            _error$message = error.message,
+            message = _error$message === void 0 ? '' : _error$message;
         sendRequest.clearTimeout(networkTimeout);
         /**
          * hook: requestFail()
@@ -290,10 +296,16 @@
         globalHook.requestFail(option, error); // 404, 500 ...
 
         if (status && status !== 200) {
+          var _data2 = {
+            success: false,
+            message: statusText || message || 'Error',
+            data: error
+          };
           /**
            * handler: error()
            */
-          result = handler.error(error, option);
+
+          result = handler.error(_data2, option);
 
           if (util.isPromise(result)) {
             return result;
