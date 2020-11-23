@@ -135,12 +135,12 @@ let option = {
         }
     },
     handler: {
-        success({data, message}, option) {
+        success(data, option) {
 
         },
-        error({data, message}, option) {
+        error(error, option) {
             if (option['x-message']) {
-                ui.alert(message);
+                ui.alert(error.message);
             }
         }
     }
@@ -246,9 +246,9 @@ export default apify(request.post, list, option);
 ```javascript
 let option = {
     handler: {
-        success({data, success}, option) {
+        success(data, option) {
             // 可以在这里对response在进行细分
-            if (success) {
+            if (data) {
                 return Promise.resolve(data);
             }
             

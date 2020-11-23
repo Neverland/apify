@@ -110,7 +110,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 return response.json();
             })
             .then(json => {
-                let data = {success: true, message: 'success', data: json};
+                let data = json || {};
 
                 /**
                  * hook: afterParse()
@@ -126,7 +126,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                     return result;
                 }
 
-                return resolve(result || data);
+                return resolve(data);
             })
             .catch(error => {
                 let result = {};
@@ -141,12 +141,10 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
 
                 // 404, 500 ...
                 if (status && status !== 200) {
-                    let data = {success: false, message: statusText || message || 'Error', data: error};
-
                     /**
                      * handler: error()
                      */
-                    result = handler.error(data, option);
+                    result = handler.error(error, option);
 
                     if (util.isPromise(result)) {
                         return result;
