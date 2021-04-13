@@ -1,8 +1,8 @@
 {
   "name": "i-apify",
-  "version": "0.6.8",
+  "version": "0.6.9",
   "description": "A api solution for `web browser` based Fetch api!",
-  "main": "dist/index.min.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "mocha test/spec.js",
     "build": "rollup -c",
