@@ -59,7 +59,7 @@
    */
 
   var FETCH_TIMEOUT = 1000 * 5;
-  var X_OPTION_ENUM = {
+  var X_OPTION_ENUM$1 = {
     silent: 'x-silent',
     message: 'x-message',
     timeout: 'x-timeout'
@@ -87,7 +87,7 @@
     headers: HEADERS,
     credentials: CREDENTIALS,
     dataType: DATA_TYPE,
-    X_OPTION_ENUM: X_OPTION_ENUM,
+    X_OPTION_ENUM: X_OPTION_ENUM$1,
     METHOD: METHOD
   }, X_OPTION);
 
@@ -147,8 +147,8 @@
    *
    * @since 2017/9/5
    */
-  var X_OPTION_ENUM$1 = defaultConfig.X_OPTION_ENUM,
-      METHOD$1 = defaultConfig.METHOD;
+  var X_OPTION_ENUM = defaultConfig.X_OPTION_ENUM;
+      defaultConfig.METHOD;
   /**
    * sendRequest
    *
@@ -210,7 +210,7 @@
      *
      */
 
-    var timeout = X_OPTION_ENUM$1.timeout;
+    var timeout = X_OPTION_ENUM.timeout;
     var xTimeout = option[timeout];
     /**
      * hook: beforeRequest
@@ -248,7 +248,7 @@
       return fetch(option['x-uri'], payload).then(function (response) {
         sendRequest.clearTimeout(networkTimeout);
 
-        if (response.status !== 200) {
+        if (!response.ok) {
           return Promise.reject(response);
         }
         /**
@@ -282,8 +282,7 @@
         return resolve(result || data);
       })["catch"](function (error) {
         var result = {};
-        var _error$status = error.status,
-            status = _error$status === void 0 ? {} : _error$status,
+        var ok = error.ok,
             _error$statusText = error.statusText,
             statusText = _error$statusText === void 0 ? '' : _error$statusText,
             _error$message = error.message,
@@ -295,7 +294,7 @@
 
         globalHook.requestFail(option, error); // 404, 500 ...
 
-        if (status && status !== 200) {
+        if (!ok) {
           var _data2 = {
             success: false,
             message: statusText || message || 'Error',
