@@ -1,11 +1,11 @@
 {
   "name": "i-apify",
-  "version": "0.6.6",
+  "version": "0.6.8",
   "description": "A api solution for `web browser` based Fetch api!",
   "main": "dist/index.min.js",
   "scripts": {
     "test": "mocha test/spec.js",
-    "build": "rollup -c && mocha test/spec.js",
+    "build": "rollup -c",
     "coverage": "nyc npm test && nyc report --reporter=text-lcov > coverage.lcov && codecov --token=e169bd1f-6ecb-407e-a3b1-1f1aa19f5798"
   },
   "repository": {

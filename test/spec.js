@@ -13,7 +13,7 @@
 let assert = require('assert');
 let should = require('should');
 
-let iApify = require('../dist/index.min');
+let iApify = require('../dist/index');
 let {apify, request} = iApify;
 
 let apiMap = {getData: '/get/data?_version=1'};

@@ -10,16 +10,6 @@ import minify from 'rollup-plugin-minify'
 
 export default {
     input: 'src/index.js',
-    plugins: [
-        babel({
-            exclude: 'node_modules/**',
-            include: 'src/**',
-            babelHelpers: 'bundled'
-        }),
-        minify({umd: {
-            dest: 'dist/index.min.js'
-        }})
-    ],
     output: {
         file: 'dist/index.js',
         format: 'umd',
@@ -31,6 +21,16 @@ export default {
             'query-string': 'queryString'
         }
     },
+    plugins: [
+        babel({
+            exclude: 'node_modules/**',
+            include: 'src/**',
+            babelHelpers: 'bundled'
+        }),
+        minify({umd: {
+            dest: 'dist/index.min.js'
+        }})
+    ],
     external: [
         'underscore',
         'deep-assign',
