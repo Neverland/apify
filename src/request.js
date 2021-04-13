@@ -99,7 +99,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             .then(response => {
                 sendRequest.clearTimeout(networkTimeout);
 
-                if (!response.ok) {
+                if (response.status !== 200) {
                     return Promise.reject(response);
                 }
                 /**
@@ -130,7 +130,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
             })
             .catch(error => {
                 let result = {};
-                let {ok, statusText = '', message = ''} = error;
+                let {status = {}, statusText = '', message = ''} = error;
 
                 sendRequest.clearTimeout(networkTimeout);
 
@@ -140,7 +140,7 @@ function sendRequest(method = 'POST', uri, data = {}, option = {}) {
                 globalHook.requestFail(option, error);
 
                 // 404, 500 ...
-                if (!ok) {
+                if (status && status !== 200) {
                     let data = {success: false, message: statusText || message || 'Error', data: error};
                     /**
                      * handler: error()
